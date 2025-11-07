@@ -184,13 +184,43 @@ const fallbackWordPuzzle = {
     es: { word: "TIERRA", hint: "Nuestro planeta.", letters: ["T", "I", "E", "R", "A", "S", "O", "L", "M", "N", "V", "C"] }
 };
 
-// --- Backgrounds (Matching style) ---
-const backgrounds = [
-    { name: 'Hero Mountain', value: 'url("https://placehold.co/1080x1920/5a8f9e/FFFFFF?text=Mountains&font=fredoka+one")' },
-    { name: 'Flowers', value: 'url("https://placehold.co/1080x1920/d0a7a9/f0e1e1?text=Flowers&font=fredoka+one")' },
-    { name: 'Sky', value: 'url("https://placehold.co/1080x1920/87CEEB/E0F6FF?text=Sky&font=fredoka+one")' },
-    { name: 'Forest', value: 'url("https://placehold.co/1080x1920/2a623d/a8e063?text=Forest&font=fredoka+one")' }
+// --- Backgrounds (Expanded List) ---
+const backgroundThemes = [
+    { name: 'Mountains', colors: '5a8f9e/FFFFFF' },
+    { name: 'Flowers', colors: 'd0a7a9/f0e1e1' },
+    { name: 'Sky', colors: '87CEEB/E0F6FF' },
+    { name: 'Forest', colors: '2a623d/a8e063' },
+    { name: 'Sunset', colors: 'ff7e5f/feb47b' },
+    { name: 'Night', colors: '2c3e50/4a69bd' },
+    { name: 'Beach', colors: 'f7b733/f4e2d8' },
+    { name: 'Pastel', colors: 'a8e6cf/dcedc1' },
+    { name: 'Ruby', colors: 'D31027/EA384D' },
+    { name: 'Ocean', colors: '00c6ff/0072ff' },
+    { name: 'Mint', colors: '98de5b/08e1ae' },
+    { name: 'Sakura', colors: 'fdbcb4/f7e2e0' },
+    { name: 'Azure', colors: '00B4DB/0083B0' },
+    { name: 'Lava', colors: 'f85032/e73827' },
+    { name: 'Emerald', colors: '0f9b0f/7be47b' },
+    { name: 'Amethyst', colors: '9D50BB/6E48AA' },
+    { name: 'Rose', colors: 'E55D87/5FC3E4' },
+    { name: 'Gold', colors: 'F2C94C/F2994A' },
+    { name: 'Steel', colors: '8e9eab/eef2f3' },
+    { name: 'Sand', colors: 'c2b280/eaddb9' },
 ];
+
+// Generate a larger list
+const backgrounds = [];
+let themeIndex = 0;
+for (let i = 1; i <= 50; i++) {
+    const theme = backgroundThemes[themeIndex];
+    // Use URL encoding for the space in the text
+    const text = `${theme.name.replace(' ', '+')}+${i}`;
+    backgrounds.push({
+        name: `${theme.name} ${i}`,
+        value: `url("https://placehold.co/1080x1920/${theme.colors}?text=${text}&font=fredoka+one")`
+    });
+    themeIndex = (themeIndex + 1) % backgroundThemes.length; // Cycle through themes
+}
 
 // --- Core Functions ---
 
@@ -793,19 +823,29 @@ function saveScoreToDatabase(score) {
 
 // --- Event Listeners & Initialization ---
 
-document.getElementById('musicVolume').addEventListener('input', e => {
-    musicVolume = e.target.value / 100;
-    if (bgMusic && audioContext) {
-        playBackgroundMusic();
-    }
-});
-document.getElementById('sfxVolume').addEventListener('input', e => {
-    sfxVolume = e.target.value / 100;
-});
-document.getElementById('playerNameInput').addEventListener('change', e => {
-    playerName = e.target.value || 'Player';
-    localStorage.setItem('drweee_playerName', playerName);
-});
+// Safely attach event listeners only if the elements exist (prevents runtime errors in dev/test pages)
+const _musicVolumeEl = document.getElementById('musicVolume');
+if (_musicVolumeEl) {
+    _musicVolumeEl.addEventListener('input', e => {
+        musicVolume = e.target.value / 100;
+        if (bgMusic && audioContext) {
+            playBackgroundMusic();
+        }
+    });
+}
+const _sfxVolumeEl = document.getElementById('sfxVolume');
+if (_sfxVolumeEl) {
+    _sfxVolumeEl.addEventListener('input', e => {
+        sfxVolume = e.target.value / 100;
+    });
+}
+const _playerNameInputEl = document.getElementById('playerNameInput');
+if (_playerNameInputEl) {
+    _playerNameInputEl.addEventListener('change', e => {
+        playerName = e.target.value || 'Player';
+        localStorage.setItem('drweee_playerName', playerName);
+    });
+}
 
 // --- Game Initialization ---
 function simulateLoading() {
