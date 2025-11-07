@@ -181,6 +181,14 @@ body {
     width: min(400px, 80%);
     margin-bottom: clamp(20px, 5vh, 40px);
     position: relative;
+    /* NEW GLASSMORPHISM STYLES */
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    border-radius: 20px; /* Rounded corners for the container */
+    padding: 15px; /* Add padding to contain the elements */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 .progress-labels {
     display: flex;
@@ -440,8 +448,8 @@ body {
     border-radius: 5px; 
     background: #ddd; 
     outline: none; 
-    -webkit-appearance: none;
-    appearance: none; 
+    -webkit-appearance: none; 
+    appearance: none;
 }
 .volume-slider::-webkit-slider-thumb { 
     -webkit-appearance: none; 
