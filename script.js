@@ -32,10 +32,12 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent) || 
 
 // --- Asset Loading (Placeholders) ---
 const boyImg = new Image();
-boyImg.src = 'https://placehold.co/150x200/7cb342/ecf0f1?text=Dr.WEEE&font=fredoka+one';
+// Updated: New image src
+boyImg.src = 'https://raw.githubusercontent.com/AdhamAmin/Game/main/image-removebg-preview.png';
 
 const girlImg = new Image();
-girlImg.src = 'https://placehold.co/150x200/e74c3c/ecf0f1?text=Dr.WEEENA&font=fredoka+one';
+// Updated: New image src
+girlImg.src = 'https://raw.githubusercontent.com/AdhamAmin/Game/main/image-removebg-preview.png';
 
 let currentCharacterImg = boyImg;
 
@@ -61,7 +63,7 @@ let gameSession = {
 const translations = {
     en: {
         title: "Dr.WEEE's World", drweee: "Dr. WEEE", drweeena: "Dr. WEEENA", 
-        playAsBoy: "Play as Dr. WEEE", playAsGirl: "Play as Dr. WEEENA", 
+        playAsBoy: "Play as Dr. WEEE", playAsGirl: "Play as Dr. WEEENA", // Kept for logic, though buttons are gone
         raceChallenge: "Race Challenge", leaderboard: "Leaderboard", friends: "Friends", 
         settings: "Settings", musicVolume: "Music Volume", sfxVolume: "SFX Volume", 
         playerName: "Player Name", yourCode: "Your Player Code", addFriend: "Add Friend by Code", 
@@ -177,11 +179,8 @@ for (let i = 1; i <= 10; i++) {
     gameState.levelsData.push({ missions });
 }
 
-// Safe DOM lookups for canvases (may be null in some previews/tests)
-const mapCanvas = document.getElementById('mapCanvas');
-const mapCtx = mapCanvas ? mapCanvas.getContext('2d') : null;
-const raceCanvas = document.getElementById('raceCanvas');
-const raceCtx = raceCanvas ? raceCanvas.getContext('2d') : null;
+const mapCanvas = document.getElementById('mapCanvas'), mapCtx = mapCanvas.getContext('2d');
+const raceCanvas = document.getElementById('raceCanvas'), raceCtx = raceCanvas.getContext('2d');
 
 const character = { x: 100, y: 100, targetX: 100, targetY: 100, moving: false };
 let raceState = { playerPos: 0, aiPos: 0, questionCount: 0, racing: false, roadOffset: 0 };
@@ -358,7 +357,7 @@ Generate 10 new, unique, multiple-choice quiz questions.
 Focus on the player's weaker topics to help them learn. If stats are all 0, provide a mix.
 Topics must be 'math', 'science', 'environment', or 'geography'.
 The language for questions and answers must be: ${currentLanguage}.
-Return *ONLY* a valid JSON array matching the provided schema. Do not include 'json' or code-block wrappers.`;
+Return *ONLY* a valid JSON array matching the provided schema. Do not include 'json' or '```' wrappers.`;
 
     const schema = {
         type: "ARRAY",
@@ -407,7 +406,7 @@ async function fetchWordPuzzlesFromAI() {
 The words should be related to 'science', 'nature', 'technology', and 'environment'.
 The words must be between 5-10 letters.
 The language for words and hints must be: ${currentLanguage}.
-Return *ONLY* a valid JSON array matching the provided schema. Do not include 'json' or code-block wrappers.`;
+Return *ONLY* a valid JSON array matching the provided schema. Do not include 'json' or '```' wrappers.`;
 
     const schema = {
         type: "ARRAY",
@@ -511,24 +510,15 @@ async function startRaceWithColor() {
     document.getElementById('raceProgress').textContent = 0;
     
     // Ensure canvas dimensions are set correctly
-    if (raceCanvas) resizeCanvas(raceCanvas);
-    // Start draw loop only if we have a valid drawing context
-    if (raceCtx) {
-        raceState.racing = true;
-        drawRace();
-    } else {
-        console.warn('Race canvas/context not found — cannot start race animation.');
-    }
+    resizeCanvas(raceCanvas);
+    
+    drawRace();
     setTimeout(() => showQuestion('race'), 1000);
 }
 
 function drawRace() {
-    // Ensure the drawing context exists
-    if (!raceCtx) return;
     if (!raceState.racing || isPaused) return;
 
-    // Guard against missing canvas size
-    if (!raceCanvas) return;
     raceCtx.clearRect(0, 0, raceCanvas.width, raceCanvas.height);
     
     // Simple responsive sky/ground
@@ -616,19 +606,17 @@ function clamp(min, preferred, max) {
 function showMap() {
     document.getElementById('mainMenu').style.display = 'none';
     document.getElementById('mapContainer').style.display = 'flex'; // Use flex
-    if (mapCanvas) resizeCanvas(mapCanvas);
-    if (mapCtx) drawMap();
+    resizeCanvas(mapCanvas);
+    drawMap();
 }
 
 function drawMap() {
-    if (!mapCtx) return;
     if (isPaused) return;
 
-    if (!mapCanvas) return;
     mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
     const gradient = mapCtx.createLinearGradient(0, 0, 0, mapCanvas.height);
     gradient.addColorStop(0, '#a8edea');
-    gradient.addColorStop(1, '#fe6fe3');
+    gradient.addColorStop(1, '#fed6e3');
     mapCtx.fillStyle = gradient;
     mapCtx.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
 
@@ -876,8 +864,8 @@ async function nextLevel() {
     document.getElementById('currentMission').textContent = gameState.currentMission;
     document.getElementById('mapContainer').style.display = 'flex'; // use flex
     document.getElementById('wordGameContainer').style.display = 'none';
-    if (mapCanvas) resizeCanvas(mapCanvas);
-    if (mapCtx) drawMap();
+    resizeCanvas(mapCanvas);
+    drawMap();
 }
 
 function backToMenu() {
@@ -1007,8 +995,7 @@ function playBackgroundMusic() {
 }
 function toggleSound() {
     soundEnabled = !soundEnabled;
-    const soundToggleBtn = document.querySelector('.sound-toggle');
-    if (soundToggleBtn) soundToggleBtn.textContent = soundEnabled ? '🔊' : '🔇';
+    document.querySelector('.sound-toggle').textContent = soundEnabled ? '🔊' : '🔇';
     if (!soundEnabled && bgMusic) {
         bgMusic.stop();
         bgMusic = null;
@@ -1024,7 +1011,7 @@ function saveScoreToDatabase(score) {
     fetch(DB_CONFIG.SCORE_POST_URL, {
         method: 'POST',
         headers: {
-            'Authorization': 'Bearer ' + DB_CONFIG.API_KEY,
+            'Authorization': 'Bearer 'A' + DB_CONFIG.API_KEY,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -1042,39 +1029,28 @@ function saveScoreToDatabase(score) {
 
 // --- Event Listeners & Initialization ---
 
-// Guard event listener attachments in case elements are missing
-const musicVolumeEl = document.getElementById('musicVolume');
-if (musicVolumeEl) {
-    musicVolumeEl.addEventListener('input', e => {
-        musicVolume = e.target.value / 100;
-        if (bgMusic && audioContext) {
-            playBackgroundMusic();
-        }
-    });
-}
-const sfxVolumeEl = document.getElementById('sfxVolume');
-if (sfxVolumeEl) {
-    sfxVolumeEl.addEventListener('input', e => {
-        sfxVolume = e.target.value / 100;
-    });
-}
-const playerNameInputEl = document.getElementById('playerNameInput');
-if (playerNameInputEl) {
-    playerNameInputEl.addEventListener('change', e => {
-        playerName = e.target.value || 'Player';
-        localStorage.setItem('drweee_playerName', playerName);
-    });
-}
+document.getElementById('musicVolume').addEventListener('input', e => {
+    musicVolume = e.target.value / 100;
+    // You might want to adjust the bgMusic gain here dynamically
+    if (bgMusic && audioContext) {
+        // This is a bit complex, gain nodes should be used.
+        // For simplicity, we'll just restart it.
+        playBackgroundMusic();
+    }
+});
+document.getElementById('sfxVolume').addEventListener('input', e => {
+    sfxVolume = e.target.value / 100;
+});
+document.getElementById('playerNameInput').addEventListener('change', e => {
+    playerName = e.target.value || 'Player';
+    localStorage.setItem('drweee_playerName', playerName);
+});
 
-// Map click/touch listener (guarded)
-if (mapCanvas) {
-    mapCanvas.addEventListener('touchstart', handleMapTouch);
-    mapCanvas.addEventListener('click', handleMapTouch);
-}
+// Map click/touch listener
+mapCanvas.addEventListener('touchstart', handleMapTouch);
+mapCanvas.addEventListener('click', handleMapTouch);
 
 function handleMapTouch(e) {
-    // Ensure the canvas exists and we can interact with it
-    if (!mapCanvas) return;
     if (isPaused || character.moving) return;
     e.preventDefault();
     const rect = mapCanvas.getBoundingClientRect();
@@ -1109,7 +1085,6 @@ function handleMapTouch(e) {
 
 // --- Canvas Resizing ---
 function resizeCanvas(canvas) {
-    if (!canvas) return;
     const container = canvas.parentElement;
     if (!container) return;
     
@@ -1123,14 +1098,12 @@ function resizeCanvas(canvas) {
 
 // Resize all canvases when window changes
 window.addEventListener('resize', () => {
-    const mapContainer = document.getElementById('mapContainer');
-    const raceContainer = document.getElementById('raceContainer');
-    if (mapContainer && mapContainer.style.display === 'flex') {
-        if (mapCanvas) resizeCanvas(mapCanvas);
-        if (mapCtx) drawMap(); // Redraw map
+    if (document.getElementById('mapContainer').style.display === 'flex') {
+        resizeCanvas(mapCanvas);
+        drawMap(); // Redraw map
     }
-    if (raceContainer && raceContainer.style.display === 'flex') {
-        if (raceCanvas) resizeCanvas(raceCanvas);
+    if (document.getElementById('raceContainer').style.display === 'flex') {
+        resizeCanvas(raceCanvas);
         // drawRace() is called by its own loop, no need to call here
     }
 });
