@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <!-- 
   This HTML file is based *exactly* on the layout from the image you sent.
-  It's set to 'ar' (Arabic) by default but can be changed.
+  It now supports multiple languages again and has the AI loader.
 -->
-<!-- MODIFIED: Removed lang and dir. script.js will handle this. -->
 <html>
 <head>
     <meta charset="UTF-8">
@@ -30,10 +29,9 @@
             <p class="loading-text" data-lang="loading">Loading... 0%</p>
         </div>
         
-        <!-- AI Puzzle Loading Spinner (Hidden by default) -->
-        <div class="loading-screen" id="aiLoader" style="display: none;">
+        <!-- AI Puzzle Loading Spinner --><div class="loading-screen" id="aiLoader" style="display: none;">
             <div class="spinner"></div>
-            <p class="loading-text" id="aiLoaderText" data-lang="aiLoading">Finding a new puzzle...</p>
+            <p class="loading-text" id="aiLoaderText" data-lang="aiLoading">Loading new puzzle...</p>
         </div>
 
         <!-- 
@@ -90,7 +88,7 @@
                 </div>
                 
                 <!-- Play Button (Level) --><button class="play-btn" id="continueBtn" onclick="startGame()">
-                    <span data-lang="continueLevel">المستوى</span> 1
+                    <span data-lang="continueLevel">المستوى</span> <span id="continueBtnNumber">1</span>
                 </button>
             </div>
             
@@ -107,8 +105,8 @@
                     --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-XLZN4UD8ZXfIiMBZmK2JjIuzb4J8ax.png&w=1000&q=75" alt-data-lang="altPoints" alt="Points" class="currency-icon">
                     <span id="gameCurrency">1230</span>
                 </div>
-                <!-- Level Title --><h2 class="game-level-title" id="gameLevelTitle">
-                    <span data-lang="level">المستوى</span> 1
+                <!-- Level Title --><h2 class="game-level-title">
+                    <span data-lang="level">المستوى</span> <span id="gameLevelTitleNumber">1</span>
                 </h2>
                 <!-- Home Button --><div class="icon-buttons">
                     <button class="icon-btn" onclick="backToMenu()" aria-label-data-lang="ariaHome" aria-label="Home">
@@ -177,7 +175,7 @@
             <div class="panel-content">
                 <div class="setting-item">
                     <label class="setting-label" data-lang="yourCode">Your Player Code</label>
-                    <!-- MODIFIED: Added container and copy button --><div class="player-code-container">
+                    <div class="player-code-container">
                         <span class="player-code" id="playerCode">LOADING...</span>
                         <button class="copy-btn" onclick="copyPlayerCode()" aria-label-data-lang="ariaCopy" aria-label="Copy Code">
                             <i data-feather="copy"></i>
@@ -202,7 +200,7 @@
             </div>
         </div>
 
-        <!-- NEW: Language Panel --><div class="panel" id="languagePanel" style="display: none;">
+        <!-- Language Panel --><div class="panel" id="languagePanel" style="display: none;">
             <h2 data-lang="chooseLanguage">Choose Language</h2>
             <button class="close-btn" onclick="toggleLanguagePanel()"><i data-feather="x"></i></button>
             <div class="panel-content">
@@ -226,8 +224,8 @@
         
         <!-- Game Over / Error Panel --><div class="panel" id="gameOverPanel" style="display: none;">
              <div class="panel-content" style="text-align: center;">
-                <h2 data-lang="aiErrorTitle">Error</h2>
-                <p id="gameOverTip" data-lang="aiError">Could not load puzzle.</p>
+                <h2 data-lang="errorTitle">Error</h2>
+                <p id="gameOverTip" data-lang="apiError">Could not load puzzle.</p>
                 <button class="panel-btn" onclick="retryGame()" data-lang="tryAgain">Try Again</button>
                 <button class="panel-btn-secondary" onclick="backToMenu()" data-lang="mainMenu">Main Menu</button>
             </div>
