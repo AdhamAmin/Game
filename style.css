@@ -280,31 +280,6 @@ body {
    display: none; /* Old one is hidden */
 }
 
-/* New Circle Style for Language Selector */
-.language-select-circle {
-    width: clamp(40px, 10vw, 48px);
-    height: clamp(40px, 10vw, 48px);
-    border-radius: 50%;
-    background: var(--color-glass);
-    backdrop-filter: blur(10px);
-    border: none;
-    color: var(--color-light);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: clamp(1rem, 4vw, 1.2rem);
-    padding: 0;
-    text-align: center;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
-.language-select-circle option {
-    color: var(--color-dark);
-}
-
 
 /* --- Game (Puzzle) Screen --- */
 .game-level-title {
@@ -425,18 +400,24 @@ body {
     gap: 4px;
     background: none;
     border: none;
-    cursor: pointer;
     color: var(--color-light);
-    opacity: 0.8;
+    cursor: pointer;
+    opacity: 0.9;
+    transition: all 0.2s;
 }
-.power-up-btn i {
-    width: clamp(24px, 6vw, 30px);
-    height: clamp(24px, 6vw, 30px);
+.power-up-btn:active {
+    transform: scale(0.95);
+    opacity: 1;
 }
 .power-up-btn .power-up-icon {
-    width: clamp(24px, 6vw, 30px);
-    height: clamp(24px, 6vw, 30px);
+    width: clamp(40px, 10vw, 48px);
+    height: clamp(40px, 10vw, 48px);
     object-fit: contain;
+}
+.power-up-btn i {
+    width: clamp(40px, 10vw, 48px);
+    height: clamp(40px, 10vw, 48px);
+    stroke-width: 2px;
 }
 .power-up-btn span {
     font-weight: 700;
@@ -444,9 +425,10 @@ body {
 }
 .report-link {
     font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+    font-weight: 700;
     color: var(--color-light);
-    opacity: 0.7;
     text-decoration: underline;
+    opacity: 0.8;
 }
 
 /* --- Panels (Settings, Friends, etc.) --- */
@@ -454,37 +436,48 @@ body {
     position: absolute;
     bottom: 0;
     left: 0;
-    right: 0;
     width: 100%;
-    max-height: 85vh;
+    max-height: 80vh;
     background: var(--color-light);
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
-    display: none; /* Hidden by default */
-    flex-direction: column;
     z-index: 50;
+    overflow-y: auto;
     padding: var(--padding-screen);
+    padding-top: calc(var(--padding-screen) + 1.5rem); /* Extra space for title */
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
 }
 .panel h2 {
     font-family: var(--font-title);
-    color: var(--color-text);
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    color: var(--color-dark);
     text-align: center;
-    margin-bottom: 1rem;
-    font-size: clamp(1.5rem, 5vw, 1.8rem);
+    position: absolute;
+    top: var(--padding-screen);
+    left: 50%;
+    transform: translateX(-50%);
 }
 .close-btn {
     position: absolute;
     top: var(--padding-screen);
     right: var(--padding-screen);
-    background: none;
+    width: 30px;
+    height: 30px;
+    background: #f0f0f0;
+    border-radius: 50%;
     border: none;
     color: var(--color-text);
-    opacity: 0.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
 }
+.close-btn i {
+    width: 20px;
+    height: 20px;
+}
 .panel-content {
-    overflow-y: auto;
+    margin-top: 1.5rem;
 }
 .setting-item {
     margin-bottom: 1.5rem;
@@ -493,7 +486,7 @@ body {
     font-weight: 700;
     font-size: clamp(1rem, 4vw, 1.1rem);
     color: var(--color-text);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
     display: block;
 }
 .name-input, .code-input {
@@ -506,64 +499,131 @@ body {
 }
 .volume-slider {
     width: 100%;
+    -webkit-appearance: none;
+    appearance: none; /* Standard property for cross-browser */
+    height: 8px;
+    background: #E0E0E0;
+    border-radius: 4px;
+    outline: none;
 }
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    cursor: pointer;
+}
+.volume-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    cursor: pointer;
+    border: none;
+}
+/* Background Options */
 .background-options {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
     gap: 15px;
 }
 .bg-option {
     width: 100%;
-    aspect-ratio: 9 / 16;
+    aspect-ratio: 1 / 1;
     border-radius: 10px;
-    cursor: pointer;
     border: 3px solid transparent;
     background-size: cover;
     background-position: center;
+    cursor: pointer;
     transition: all 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .bg-option:hover {
     transform: scale(1.05);
 }
 .bg-option.selected {
     border-color: var(--color-primary);
+    transform: scale(1.05);
+}
+/* NEW: Styles for background icons */
+.bg-option .bg-icon-img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    border-radius: 5px; /* Optional */
+}
+.bg-option i {
+    width: 60%;
+    height: 60%;
+    color: #333; /* Default icon color */
+    stroke-width: 2px;
+}
+
+/* Friends Panel */
+.player-code-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: #f0f0f0;
+    border-radius: 10px;
+    padding: 8px 12px;
 }
 .player-code {
-    background: #f0f0f0;
-    padding: 12px;
-    border-radius: 10px;
+    flex-grow: 1;
     font-family: var(--font-title);
-    font-size: clamp(1.1rem, 4vw, 1.3rem);
-    color: var(--color-primary);
-    text-align: center;
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    color: var(--color-dark);
+}
+.copy-btn {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border: none;
+    background: #e0e0e0;
+    color: var(--color-text);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.copy-btn i {
+    width: 20px;
+    height: 20px;
 }
 .panel-btn {
-    display: block;
     width: 100%;
-    padding: clamp(12px, 3vw, 16px);
+    padding: 14px;
     background: var(--color-primary);
-    color: var(--color-light);
     border: none;
     border-radius: 10px;
+    color: var(--color-light);
     font-family: var(--font-title);
-    font-size: clamp(1rem, 4vw, 1.2rem);
-    margin-top: 1rem;
+    font-size: clamp(1rem, 4vw, 1.1rem);
     cursor: pointer;
+    margin-top: 10px;
+}
+.panel-btn:active {
+    transform: scale(0.98);
 }
 .panel-btn-secondary {
-    display: block;
     width: 100%;
-    padding: clamp(12px, 3vw, 16px);
-    background: #E0E0E0;
-    color: var(--color-text);
+    padding: 14px;
+    background: #f0f0f0;
     border: none;
     border-radius: 10px;
+    color: var(--color-text);
     font-family: var(--font-title);
-    font-size: clamp(1rem, 4vw, 1.2rem);
-    margin-top: 0.5rem;
+    font-size: clamp(1rem, 4vw, 1.1rem);
     cursor: pointer;
+    margin-top: 10px;
 }
 .friends-list {
+    margin-top: 1rem;
     max-height: 200px;
     overflow-y: auto;
 }
@@ -571,59 +631,50 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f5f5f5;
+    background: #f0f0f0;
     padding: 12px;
     border-radius: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 700;
 }
-.friend-item button {
-    background: none;
+.remove-friend-btn {
+    width: 24px;
+    height: 24px;
     border: none;
-    color: #E74C3C;
-    font-weight: 900;
+    background: #e0e0e0;
+    color: var(--color-text);
+    border-radius: 50%;
     cursor: pointer;
+    font-weight: 700;
 }
 
-/* --- RTL Specifics --- */
-[dir="rtl"] .top-bar {
-    flex-direction: row-reverse;
-}
-/* This needs to be undone for the new layout */
-[dir="rtl"] .top-bar-left {
-    flex-direction: row-reverse;
-}
-[dir="rtl"] .icon-buttons {
-    flex-direction: row-reverse;
-}
-[dir="rtl"] .progress-labels {
-    flex-direction: row-reverse;
-}
-[dir="rtl"] .game-footer {
-    flex-direction: row-reverse;
-}
-[dir="rtl"] .close-btn {
-    right: auto;
-    left: var(--padding-screen);
-}
-[dir="rtl"] .friend-item {
-    flex-direction: row-reverse;
-}
-[dir="rtl"] .friend-item button {
-    margin-right: 0;
-    margin-left: auto;
+/* --- Responsive Layout Adjustments --- */
+@media (min-height: 700px) {
+    .puzzle-content {
+        justify-content: space-evenly;
+        gap: 1rem;
+    }
 }
 
-/* Media Query for larger screens (tablets/PCs) */
-@media (min-width: 600px) {
+@media (max-width: 320px) {
+    /* Special fix for very small screens */
+    .answer-box {
+        width: 30px;
+        height: 30px;
+        font-size: 1.2rem;
+    }
+    .letter-grid {
+        gap: 8px;
+    }
+}
+
+@media (min-width: 768px) {
     .panel {
-        bottom: auto; /* Un-stick from bottom */
-        top: 50%; /* Center vertically */
-        left: 50%; /* Center horizontally */
-        transform: translate(-50%, -50%); /* Finesses the centering */
-        width: 90%; /* Set a responsive width */
-        max-width: 500px; /* But cap it at 500px */
-        border-radius: var(--border-radius); /* Add border-radius all around */
-        max-height: 90vh; /* Limit height */
+        bottom: 50%;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        max-width: 500px;
+        max-height: 70vh;
+        border-radius: var(--border-radius);
     }
 }
