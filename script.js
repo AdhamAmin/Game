@@ -1,20 +1,20 @@
-"use strict";
+/* ---
+  Main Script for Words Game
+  Based on the provided image and video
+--- */
 
-// --- API & Config ---
-
-// LEAVE THIS EMPTY. Canvas will provide the key at runtime.
-const GEMINI_API_KEY = ""; 
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${GEMINI_API_KEY}`;
-
-// Placeholder for your separate Database (e.g., Firebase, Supabase)
-const DB_CONFIG = {
-    API_KEY: "YOUR_DATABASE_API_KEY_HERE", 
-    LEADERBOARD_GET_URL: "https://your-database-provider.com/api/v1/leaderboard",
-    SCORE_POST_URL: "https://your-database-provider.com/api/v1/scores",
+// --- Config Placeholder ---
+const config = {
+    // NOTE: Replace "YOUR_GEMINI_API_KEY" with your actual key
+    API_KEY: "YOUR_GEMINI_API_KEY",
 };
 
 // --- Game State Variables ---
-let currentLanguage = 'ar'; // Default to Arabic as per image
+let currentLanguage = 'ar'; // Default to Arabic
+const languages = ['ar', 'en', 'it', 'es'];
+let currentLangIndex = 0;
+
+let isPaused = false;
 let soundEnabled = true;
 let musicVolume = 0.5;
 let sfxVolume = 0.7;
@@ -25,358 +25,298 @@ let playerCode = '';
 let friends = [];
 let sounds = {};
 
-// --- New Game State ---
-let gameState = {
-    currentLevel: 7, // Match image
-    levelProgress: 18, // Match image
-    totalScore: 1230, // Default currency from image
-    currentPuzzle: null, // Will hold { word, hint, letters }
-    currentAnswer: [], // Array to hold [{ letter, gridIndex }]
-    answerSlots: [] // Array to hold the DOM elements for the answer
+// --- Player Stats for AI ---
+let playerStats = {
+    level: 1,
+    progress: 0, // MODIFIED: Default progress is 0 words
+    currency: 1230,
+    correctInRow: 0,
+    hintUsed: 0,
+    powerHintUsed: 0,
+    topics: {
+        general: { correct: 0, total: 0 },
+        geography: { correct: 0, total: 0 },
+        science: { correct: 0, total: 0 },
+        history: { correct: 0, total: 0 },
+    }
 };
 
-// --- Asset Loading (Placeholders) ---
-// We now use CSS backgrounds, so no JS images are needed for this.
-
-// --- AI & Session State ---
-let gameSession = {
-    // Stores performance to personalize AI questions
-    playerStats: {
-        language: { correct: 0, wrong: 0 }
-    },
-    retries: 0 // For exponential backoff
+// --- Current Puzzle State ---
+let currentPuzzle = {
+    word: "", // e.g., "LONDON"
+    hint: "", // e.g., "Capital of the UK"
+    letters: [], // e.g., ['L', 'O', 'N', 'D', 'O', 'N', 'A', 'B', 'C', 'X', 'Y', 'Z']
+    answer: [], // e.g., [null, null, null, null, null, null]
+    filledIndexes: [], // Tracks which answer-box index is filled
+    firstEmptyBox: 0, // The first index of answer-boxes that is null
 };
-
 
 // --- Translations ---
 const translations = {
     en: {
         title: "Dr.WEEE's World",
-        gameTitle: "Words",
+        gameTitle: "WORDS",
+        loading: "Loading...",
+        aiLoading: "Finding a new puzzle...",
         beginner: "Beginner",
         expert: "Expert",
         continueLevel: "Level",
-        gameBackgrounds: "Game Backgrounds",
         level: "Level",
-        reportProblem: "Report a problem",
         settings: "Settings",
+        playerName: "Player Name",
         musicVolume: "Music Volume",
         sfxVolume: "SFX Volume",
-        playerName: "Player Name",
         chooseBackground: "Choose Background",
+        friends: "Friends",
         yourCode: "Your Player Code",
         addFriend: "Add Friend by Code",
         add: "Add Friend",
-        friends: "Friends",
         leaderboard: "Leaderboard",
-        close: "Close",
+        reportProblem: "Report a problem",
         levelComplete: "Level Complete!",
         greatJob: "Great job!",
         continueNext: "Continue",
-        aiLoading: "Finding a new puzzle...",
+        aiError: "Could not load puzzle. Check connection or API Key.",
         aiErrorTitle: "Error",
-        aiError: "Could not load puzzle. Please try again.",
         tryAgain: "Try Again",
         mainMenu: "Main Menu",
+        copy: "Copy",
+        copied: "Copied!",
+        word: "Word",
         hint: "Hint",
-        notEnoughCoins: "Not enough diamonds!"
+        category: "Category",
+        letters: "Letters",
+        puzzleError: "Could not get a puzzle from the AI. Retrying...",
+        puzzleParseError: "Failed to parse AI response. Retrying...",
     },
     ar: {
-        title: "عالم الكلمات",
+        title: "Dr.WEEE's World",
         gameTitle: "كلمات",
+        loading: "تحميل...",
+        aiLoading: "البحث عن لغز جديد...",
         beginner: "مبتدئ",
-        expert: "متعلم", // Match image
+        expert: "متعلم",
         continueLevel: "المستوى",
-        gameBackgrounds: "خلفيات اللعبة",
         level: "المستوى",
-        reportProblem: "الإبلاغ عن مشكلة",
         settings: "الإعدادات",
+        playerName: "اسم اللاعب",
         musicVolume: "مستوى الموسيقى",
         sfxVolume: "مستوى المؤثرات",
-        playerName: "اسم اللاعب",
         chooseBackground: "اختر الخلفية",
-        yourCode: "رمزك",
+        friends: "الأصدقاء",
+        yourCode: "رمز اللاعب الخاص بك",
         addFriend: "أضف صديق بالرمز",
         add: "إضافة صديق",
-        friends: "الأصدقاء",
         leaderboard: "المتصدرين",
-        close: "إغلاق",
-        levelComplete: "المستوى مكتمل!",
+        reportProblem: "الإبلاغ عن مشكلة",
+        levelComplete: "اكتمل المستوى!",
         greatJob: "عمل رائع!",
         continueNext: "متابعة",
-        aiLoading: "جاري البحث عن لغز جديد...",
+        aiError: "لم نتمكن من تحميل اللغز. تحقق من الاتصال أو مفتاح API.",
         aiErrorTitle: "خطأ",
-        aiError: "لا يمكن تحميل اللغز. الرجاء معاودة المحاولة.",
         tryAgain: "حاول مرة أخرى",
         mainMenu: "القائمة الرئيسية",
+        copy: "نسخ",
+        copied: "تم النسخ!",
+        word: "كلمة",
         hint: "تلميح",
-        notEnoughCoins: "لا يوجد ألماس كافي!"
+        category: "فئة",
+        letters: "حروف",
+        puzzleError: "لم نتمكن من الحصول على لغز. جار المحاولة...",
+        puzzleParseError: "فشل في تحليل استجابة الذكاء الاصطناعي. جار المحاولة...",
     },
     it: {
-        title: "Mondo delle Parole",
-        gameTitle: "Parole",
+        title: "Il Mondo del Dr.WEEE",
+        gameTitle: "PAROLE",
+        loading: "Caricamento...",
+        aiLoading: "Ricerca di un nuovo puzzle...",
         beginner: "Principiante",
         expert: "Esperto",
         continueLevel: "Livello",
-        gameBackgrounds: "Sfondi di Gioco",
         level: "Livello",
-        reportProblem: "Segnala un problema",
         settings: "Impostazioni",
+        playerName: "Nome Giocatore",
         musicVolume: "Volume Musica",
         sfxVolume: "Volume Effetti",
-        playerName: "Nome Giocatore",
         chooseBackground: "Scegli Sfondo",
-        yourCode: "Il Tuo Codice",
+        friends: "Amici",
+        yourCode: "Il Tuo Codice Giocatore",
         addFriend: "Aggiungi Amico",
         add: "Aggiungi",
-        friends: "Amici",
         leaderboard: "Classifica",
-        close: "Chiudi",
+        reportProblem: "Segnala un problema",
         levelComplete: "Livello Completato!",
         greatJob: "Ottimo lavoro!",
         continueNext: "Continua",
-        aiLoading: "Ricerca di un nuovo puzzle...",
+        aiError: "Impossibile caricare il puzzle. Controlla la connessione o la chiave API.",
         aiErrorTitle: "Errore",
-        aiError: "Impossibile caricare il puzzle. Riprova.",
         tryAgain: "Riprova",
         mainMenu: "Menu Principale",
+        copy: "Copia",
+        copied: "Copiato!",
+        word: "Parola",
         hint: "Indizio",
-        notEnoughCoins: "Non hai abbastanza diamanti!"
+        category: "Categoria",
+        letters: "Lettere",
+        puzzleError: "Impossibile ottenere un puzzle dall'AI. Riprovo...",
+        puzzleParseError: "Impossibile analizzare la risposta dell'AI. Riprovo...",
     },
     es: {
-        title: "Mundo de Palabras",
-        gameTitle: "Palabras",
+        title: "El Mundo del Dr.WEEE",
+        gameTitle: "PALABRAS",
+        loading: "Cargando...",
+        aiLoading: "Buscando un nuevo rompecabezas...",
         beginner: "Principiante",
         expert: "Experto",
         continueLevel: "Nivel",
-        gameBackgrounds: "Fondos de Juego",
         level: "Nivel",
-        reportProblem: "Reportar un problema",
         settings: "Ajustes",
-        musicVolume: "Volumen Música",
-        sfxVolume: "Volumen Efectos",
         playerName: "Nombre del Jugador",
+        musicVolume: "Volumen de Música",
+        sfxVolume: "Volumen de SFX",
         chooseBackground: "Elige Fondo",
-        yourCode: "Tu Código",
-        addFriend: "Agregar Amigo",
-        add: "Agregar",
         friends: "Amigos",
+        yourCode: "Tu Código de Jugador",
+        addFriend: "Añadir Amigo",
+        add: "Añadir",
         leaderboard: "Clasificación",
-        close: "Cerrar",
+        reportProblem: "Reportar un problema",
         levelComplete: "¡Nivel Completado!",
-        greatJob: "¡Gran trabajo!",
+        greatJob: "¡Buen trabajo!",
         continueNext: "Continuar",
-        aiLoading: "Buscando un nuevo puzzle...",
+        aiError: "No se pudo cargar el rompecabezas. Revisa la conexión o la clave API.",
         aiErrorTitle: "Error",
-        aiError: "No se pudo cargar el puzzle. Inténtalo de nuevo.",
         tryAgain: "Intentar de Nuevo",
         mainMenu: "Menú Principal",
+        copy: "Copiar",
+        copied: "¡Copiado!",
+        word: "Palabra",
         hint: "Pista",
-        notEnoughCoins: "¡No hay suficientes diamantes!"
+        category: "Categoría",
+        letters: "Letras",
+        puzzleError: "No se pudo obtener un rompecabezas de la IA. Reintentando...",
+        puzzleParseError: "Error al analizar la respuesta de la IA. Reintentando...",
     }
 };
 
-// --- Fallback Puzzle (if AI fails) ---
-const fallbackWordPuzzle = {
-    en: { word: "EARTH", hint: "Our home planet.", letters: ["E", "A", "R", "T", "H", "S", "U", "N", "M", "O", "P", "L"] },
-    ar: { word: "لندن", hint: "عاصمة المملكة المتحدة", letters: ["ا", "ل", "ن", "د", "م", "س", "ق", "ر", "ب", "ج", "و", "ي"] },
-    it: { word: "TERRA", hint: "Il nostro pianeta.", letters: ["T", "E", "R", "A", "S", "O", "L", "M", "N", "V", "C", "P"] },
-    es: { word: "TIERRA", hint: "Nuestro planeta.", letters: ["T", "I", "E", "R", "A", "S", "O", "L", "M", "N", "V", "C"] }
-};
-
-// --- Backgrounds (Expanded List) ---
-const backgroundThemes = [
-    { name: 'Mountains', colors: '5a8f9e/FFFFFF' },
-    { name: 'Flowers', colors: 'd0a7a9/f0e1e1' },
-    { name: 'Sky', colors: '87CEEB/E0F6FF' },
-    { name: 'Forest', colors: '2a623d/a8e063' },
-    { name: 'Sunset', colors: 'ff7e5f/feb47b' },
-    { name: 'Night', colors: '2c3e50/4a69bd' },
-    { name: 'Beach', colors: 'f7b733/f4e2d8' },
-    { name: 'Pastel', colors: 'a8e6cf/dcedc1' },
-    { name: 'Ruby', colors: 'D31027/EA384D' },
-    { name: 'Ocean', colors: '00c6ff/0072ff' },
-    { name: 'Mint', colors: '98de5b/08e1ae' },
-    { name: 'Sakura', colors: 'fdbcb4/f7e2e0' },
-    { name: 'Azure', colors: '00B4DB/0083B0' },
-    { name: 'Lava', colors: 'f85032/e73827' },
-    { name: 'Emerald', colors: '0f9b0f/7be47b' },
-    { name: 'Amethyst', colors: '9D50BB/6E48AA' },
-    { name: 'Rose', colors: 'E55D87/5FC3E4' },
-    { name: 'Gold', colors: 'F2C94C/F2994A' },
-    { name: 'Steel', colors: '8e9eab/eef2f3' },
-    { name: 'Sand', colors: 'c2b280/eaddb9' },
+// --- Backgrounds ---
+// MODIFIED: Reduced list to 20 backgrounds
+const backgrounds = [
+    { name: 'Mountains 1', color: 'url(https://images.unsplash.com/photo-1519681393784-d120267933ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDV8fG1vdW50YWlufGVufDB8fHx8MTcyNDA3NzE3NHww&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-GzsgKqOaaNDdBSvCoA558OqVSMUdHF.png&w=1000&q=75' },
+    { name: 'Flowers 2', color: 'url(https://images.unsplash.com/photo-1490750967868-88aa4486c946?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDF8fGZsb3dlcnN8ZW58MHx8fHwxNzI0MDc3MjMwfDA&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'image' },
+    { name: 'Sky 3', color: 'url(https://images.unsplash.com/photo-1534088568595-a066f4e5-919b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDEwfHxza3l8ZW58MHx8fHwxNzI0MDc3MjQ5fDA&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'image' },
+    { name: 'Forest 4', color: 'url(https://images.unsplash.com/photo-1448375240586-8827074e888e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDR8fGZvcmVzdHxlbnwwfHx8fDE3MjQwNzcyNjR8MA&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'image' },
+    { name: 'Sunset 5', color: 'linear-gradient(to right, #ff7e5f, #feb47b)', iconUrl: 'image' },
+    { name: 'Night 6', color: 'linear-gradient(to right, #2c3e50, #4a69bd)', iconUrl: 'image' },
+    { name: 'Beach 7', color: 'linear-gradient(to right, #00c9ff, #92fe9d)', iconUrl: 'image' },
+    { name: 'Pastel 8', color: 'linear-gradient(to right, #ff9a9e, #fecfef)', iconUrl: 'image' },
+    { name: 'Ruby 9', color: 'linear-gradient(to right, #d31027, #ea384d)', iconUrl: 'image' },
+    { name: 'Ocean 10', color: 'linear-gradient(to right, #0575e6, #021b79)', iconUrl: 'image' },
+    { name: 'Mint 11', color: 'linear-gradient(to right, #11998e, #38ef7d)', iconUrl: 'image' },
+    { name: 'Sakura 12', color: 'linear-gradient(to right, #ffc0cb, #f0f0f0)', iconUrl: 'image' },
+    { name: 'Azure 13', color: 'linear-gradient(to right, #007bff, #c2e9fb)', iconUrl: 'image' },
+    { name: 'Lava 14', color: 'linear-gradient(to right, #ff416c, #ff4b2b)', iconUrl: 'image' },
+    { name: 'Emerald 15', color: 'linear-gradient(to right, #009688, #4db6ac)', iconUrl: 'image' },
+    { name: 'Amethyst 16', color: 'linear-gradient(to right, #9d50bb, #6e48aa)', iconUrl: 'image' },
+    { name: 'Rose 17', color: 'linear-gradient(to right, #f8cdda, #1d2b64)', iconUrl: 'image' },
+    { name: 'Gold 18', color: 'linear-gradient(to right, #f12711, #f5af19)', iconUrl: 'image' },
+    { name: 'Steel 19', color: 'linear-gradient(to right, #757f9a, #d7dde8)', iconUrl: 'image' },
+    { name: 'Sand 20', color: 'linear-gradient(to right, #c2b280, #f0e68c)', iconUrl: 'image' },
 ];
-
-// Generate a larger list
-const backgrounds = [];
-let themeIndex = 0;
-for (let i = 1; i <= 50; i++) {
-    const theme = backgroundThemes[themeIndex];
-    // Use URL encoding for the space in the text
-    const text = `${theme.name.replace(' ', '+')}+${i}`;
-    backgrounds.push({
-        name: `${theme.name} ${i}`,
-        value: `url("https://placehold.co/1080x1920/${theme.colors}?text=${text}&font=fredoka+one")`
-    });
-    themeIndex = (themeIndex + 1) % backgroundThemes.length; // Cycle through themes
-}
 
 // --- Core Functions ---
 
+/**
+ * Generates a unique player code.
+ */
 function generatePlayerCode() {
     return Math.random().toString(36).substr(2, 8).toUpperCase();
 }
 
-function changeLanguage() {
-    currentLanguage = document.getElementById('languageSelect').value;
-    // Set page direction
-    if (currentLanguage === 'ar') {
-        document.documentElement.setAttribute('dir', 'rtl');
-    } else {
-        document.documentElement.setAttribute('dir', 'ltr');
-    }
-    updateTranslations();
+/**
+ * Cycles through available languages.
+ */
+function cycleLanguage() {
+    currentLangIndex = (currentLangIndex + 1) % languages.length;
+    currentLanguage = languages[currentLangIndex];
+    
+    // Store preference
+    localStorage.setItem('drweee_language', currentLanguage);
+    
+    // Update UI
+    updateLanguage();
 }
 
-function updateTranslations() {
-    document.querySelectorAll('[data-lang]').forEach(e => {
-        const key = e.getAttribute('data-lang');
+/**
+ * Updates all text and directionality based on currentLanguage.
+ */
+function updateLanguage() {
+    const isRTL = currentLanguage === 'ar';
+    document.documentElement.lang = currentLanguage;
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+    
+    document.querySelectorAll('[data-lang]').forEach(el => {
+        const key = el.getAttribute('data-lang');
         if (translations[currentLanguage] && translations[currentLanguage][key]) {
-            e.textContent = translations[currentLanguage][key];
+            el.textContent = translations[currentLanguage][key];
+        } else if (translations.en[key]) {
+            el.textContent = translations.en[key]; // Fallback to English
         }
     });
-    // Update dynamic text
-    updateMainScreenUI();
 }
 
-function showLoadingSpinner(text) {
-    document.getElementById('aiLoaderText').textContent = text || (translations[currentLanguage].aiLoading || "Loading...");
-    document.getElementById('aiLoader').style.display = 'flex';
-}
-function hideLoadingSpinner() {
-    document.getElementById('aiLoader').style.display = 'none';
-}
-
-// --- Navigation ---
-
-async function startGame() {
-    showLoadingSpinner(translations[currentLanguage].aiLoading);
-    await fetchWordPuzzleFromAI(gameState.currentLevel);
-    hideLoadingSpinner();
-
-    if (gameState.currentPuzzle) {
-        setupWordGame();
-        document.getElementById('mainMenu').style.display = 'none';
-        document.getElementById('gameContainer').style.display = 'flex';
-    } else {
-        // AI fetch failed
-        document.getElementById('gameOverTip').textContent = translations[currentLanguage].aiError;
-        document.getElementById('gameOverPanel').style.display = 'flex';
-    }
-}
-
-function backToMenu() {
-    document.getElementById('gameContainer').style.display = 'none';
-    document.getElementById('gameOverPanel').style.display = 'none';
-    document.getElementById('levelCompletePanel').style.display = 'none';
-    document.getElementById('mainMenu').style.display = 'flex';
-    updateMainScreenUI(); // Refresh level and score
-}
-
-function retryGame() {
-    document.getElementById('gameOverPanel').style.display = 'none';
-    startGame(); // Try to start the level again
-}
-
-function nextLevel() {
-    document.getElementById('levelCompletePanel').style.display = 'none';
-    gameState.currentLevel++;
-    gameState.levelProgress += 10; // Arbitrary progress
-    if (gameState.levelProgress > 100) gameState.levelProgress = 10;
-    
-    gameState.totalScore += 100; // Reward for winning
-    updateCurrencyDisplays();
-    
-    // Save progress to localStorage
-    localStorage.setItem('drweee_level', gameState.currentLevel);
-    localStorage.setItem('drweee_score', gameState.totalScore);
-    localStorage.setItem('drweee_progress', gameState.levelProgress);
-
-    saveScoreToDatabase(gameState.totalScore); // Save to server
-    
-    updateMainScreenUI();
-    startGame();
-}
-
-function updateMainScreenUI() {
-    // Update currency
-    updateCurrencyDisplays();
-    
-    // Update Level Button
-    const levelText = translations[currentLanguage].continueLevel || "Level";
-    document.getElementById('continueBtn').innerHTML = `<span data-lang="continueLevel">${levelText}</span> ${gameState.currentLevel}`;
-    
-    // Update Progress Bar
-    document.getElementById('levelProgress').style.width = `${gameState.levelProgress}%`;
-    document.getElementById('progressValue').textContent = `${gameState.levelProgress}/100`;
-}
-
-// --- Settings Panel ---
-
-function toggleSettings(showBackgrounds = false) {
+/**
+ * Toggles the settings panel.
+ */
+function toggleSettings() {
     const panel = document.getElementById('settingsPanel');
     const isOpening = panel.style.display === 'none' || !panel.style.display;
-    panel.style.display = isOpening ? 'flex' : 'none';
     
     if (isOpening) {
         document.getElementById('playerNameInput').value = playerName;
-        // Scroll to backgrounds if that button was clicked
-        if (showBackgrounds) {
-            document.getElementById('backgroundSettings').scrollIntoView({ behavior: 'smooth' });
-        }
+        panel.style.display = 'block';
+        // Panel content is already in DOM, so Feather icons should be replaced
+        feather.replace(); // Re-run feather to find new icons
+    } else {
+        panel.style.display = 'none';
     }
 }
 
-function initSettings() {
-    const optionsContainer = document.getElementById('backgroundOptions');
-    optionsContainer.innerHTML = '';
-    const savedBg = localStorage.getItem('drweee_background') || backgrounds[0].value;
-    
-    backgrounds.forEach((bg) => {
-        const option = document.createElement('div');
-        option.className = 'bg-option';
-        option.style.backgroundImage = bg.value;
-        option.title = bg.name;
-        option.onclick = () => setBackground(bg.value, option);
-        if (bg.value === savedBg) {
-            option.classList.add('selected');
-        }
-        optionsContainer.appendChild(option);
-    });
-    setBackground(savedBg); // Apply saved or default
-}
-
-function setBackground(bgValue, selectedOption) {
-    document.getElementById('appContainer').style.backgroundImage = bgValue;
-    localStorage.setItem('drweee_background', bgValue);
-    
-    document.querySelectorAll('.bg-option').forEach(opt => opt.classList.remove('selected'));
-    if(selectedOption) {
-        selectedOption.classList.add('selected');
-    }
-}
-
-// --- Friends Panel ---
-
+/**
+ * Shows the Friends panel.
+ */
 function showFriends() {
-    document.getElementById('friendsPanel').style.display = 'flex';
-    document.getElementById('playerCode').textContent = playerCode;
     updateFriendsList();
+    document.getElementById('friendsPanel').style.display = 'block';
+    feather.replace(); // Re-run feather to find new icons
 }
+
+/**
+ * Hides the Friends panel.
+ */
 function closeFriends() {
     document.getElementById('friendsPanel').style.display = 'none';
 }
+
+/**
+ * Shows the Leaderboard panel.
+ */
+function showLeaderboard() {
+    document.getElementById('leaderboardPanel').style.display = 'block';
+    // Load leaderboard data
+    loadLeaderboard();
+}
+
+/**
+ * Hides the Leaderboard panel.
+ */
+function closeLeaderboard() {
+    document.getElementById('leaderboardPanel').style.display = 'none';
+}
+
+/**
+ * Adds a friend code.
+ */
 function addFriend() {
     const friendCode = document.getElementById('friendCodeInput').value.trim().toUpperCase();
     if (friendCode && friendCode !== playerCode && !friends.includes(friendCode)) {
@@ -386,371 +326,189 @@ function addFriend() {
         document.getElementById('friendCodeInput').value = '';
     }
 }
+
+/**
+ * Updates the visual list of friends.
+ */
 function updateFriendsList() {
     const list = document.getElementById('friendsList');
-    list.innerHTML = ''; // Clear list
-    if (friends.length === 0) {
-        list.innerHTML = `<p style="opacity: 0.7; text-align: center;">${translations[currentLanguage].addFriend}</p>`;
-        return;
-    }
+    list.innerHTML = ''; // Clear old list
     friends.forEach(code => {
         const item = document.createElement('div');
         item.className = 'friend-item';
-        item.innerHTML = `<span>👤 ${code}</span><button onclick="removeFriend('${code}')">X</button>`;
+        item.innerHTML = `<span>👤 ${code}</span><button class="remove-friend-btn" onclick="removeFriend('${code}')">&times;</button>`;
         list.appendChild(item);
     });
 }
+
+/**
+ * Removes a friend.
+ */
 function removeFriend(code) {
     friends = friends.filter(f => f !== code);
     localStorage.setItem('drweee_friends', JSON.stringify(friends));
     updateFriendsList();
 }
 
-// --- Leaderboard Panel ---
-
-function showLeaderboard() {
-    document.getElementById('leaderboardPanel').style.display = 'flex';
-    const entriesDiv = document.getElementById('leaderboardEntries');
-    entriesDiv.innerHTML = `<p>${translations[currentLanguage].aiLoading}</p>`;
+/**
+ * Copies the player code to the clipboard.
+ */
+function copyPlayerCode() {
+    const code = document.getElementById('playerCode').textContent;
     
-    // Fetch leaderboard data
-    fetch(DB_CONFIG.LEADERBOARD_GET_URL, {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + DB_CONFIG.API_KEY }
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-    })
-    .then(data => {
-        entriesDiv.innerHTML = "";
-        data.slice(0, 10).forEach((entry, index) => {
-            const entryDiv = document.createElement('div');
-            entryDiv.className = 'friend-item';
-            entryDiv.innerHTML = `<span>${index + 1}. 👤 ${entry.name}</span> <span>${entry.score}</span>`;
-            entriesDiv.appendChild(entryDiv);
-        });
-    })
-    .catch(error => {
-        console.error('Error fetching leaderboard:', error);
-        entriesDiv.innerHTML = `<p style="opacity: 0.7; text-align: center;">Could not load leaderboard.</p>`;
-        // Placeholder data on error
-        entriesDiv.innerHTML += `
-            <div class="friend-item"><span>1. 👤 Player1</span> <span>5000</span></div>
-            <div class="friend-item"><span>2. 👤 ${playerName}</span> <span>${gameState.totalScore}</span></div>
-            <div class="friend-item"><span>3. 👤 Player3</span> <span>1000</span></div>
-        `;
-    });
-}
-function closeLeaderboard() {
-    document.getElementById('leaderboardPanel').style.display = 'none';
-}
-
-
-// --- AI Data Fetching ---
-
-async function fetchWordPuzzleFromAI(level) {
-    gameSession.retries = 0;
-    // Updated prompt to match the image's hint
-    const systemPrompt = `You are a word puzzle game. The player is on Level ${level}.
-Provide one single-word puzzle.
-The topic should be general knowledge, geography, science, or nature (e.g., 'Capital of UK', 'A large mammal', etc.).
-The language for word, hint, and letters must be: ${currentLanguage}.
-Return *ONLY* a valid JSON object matching the schema. Do not include 'json' or \`\`\` wrappers.
-The 'letters' array must contain exactly 12 letters for a 3x4 grid.
-It must include all unique letters of the 'word'.
-Fill the rest of the 12 spots with logical distractor letters for the specified language.
-Shuffle the 'letters' array.
-If the word has duplicate letters, only include it once in the 'letters' array, then add distractors.`;
-
-    const schema = {
-        type: "OBJECT",
-        properties: {
-            word: { type: "STRING" },
-            hint: { type: "STRING" },
-            letters: {
-                type: "ARRAY",
-                items: { type: "STRING" },
-                minItems: 12,
-                maxItems: 12
-            }
-        },
-        required: ["word", "hint", "letters"]
-    };
-
-    const payload = {
-        contents: [{ parts: [{ text: "Generate 1 word puzzle." }] }],
-        systemInstruction: { parts: [{ text: systemPrompt }] },
-        generationConfig: {
-            responseMimeType: "application/json",
-            responseSchema: schema
-        }
-    };
-
-    try {
-        const puzzle = await fetchWithRetry(GEMINI_API_URL, payload);
-        // Basic validation
-        if (!puzzle.word || !puzzle.hint || puzzle.letters.length !== 12) {
-            throw new Error("Invalid puzzle structure received from AI.");
-        }
-        // AI might return words in different cases, standardize it
-        puzzle.word = puzzle.word.toUpperCase();
-        puzzle.letters = puzzle.letters.map(l => l.toUpperCase());
-
-        gameState.currentPuzzle = puzzle;
-        console.log("AI Puzzle:", puzzle);
-    } catch (error) {
-        console.error("AI fetch failed:", error);
-        gameState.currentPuzzle = fallbackWordPuzzle[currentLanguage] || fallbackWordPuzzle.en;
-    }
-}
-
-async function fetchWithRetry(url, payload, maxRetries = 3) {
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.json();
+    // Use modern clipboard API
+    navigator.clipboard.writeText(code).then(() => {
+        // Success! Show a temporary checkmark
+        const copyBtn = document.querySelector('.copy-btn');
+        const originalIcon = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i data-feather="check"></i>';
+        feather.replace({ width: '100%', height: '100%' });
         
-        if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-            const jsonText = result.candidates[0].content.parts[0].text;
-            gameSession.retries = 0;
-            return JSON.parse(jsonText);
-        } else {
-            throw new Error("Invalid AI response structure.");
+        setTimeout(() => {
+            copyBtn.innerHTML = originalIcon;
+            feather.replace({ width: '100%', height: '100%' });
+        }, 1500);
+        
+    }).catch(err => {
+        console.error('Failed to copy code: ', err);
+        // Fallback for older browsers
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = code;
+            textArea.style.position = 'fixed'; // Avoid scrolling
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            // Show checkmark (as above)
+        } catch (e) {
+            console.error('Fallback copy failed: ', e);
         }
-    } catch (error) {
-        console.error(`Attempt ${gameSession.retries + 1} failed:`, error);
-        gameSession.retries++;
-        if (gameSession.retries < maxRetries) {
-            const delay = Math.pow(2, gameSession.retries) * 1000;
-            await new Promise(resolve => setTimeout(resolve, delay));
-            return fetchWithRetry(url, payload, maxRetries);
-        } else {
-            throw new Error("AI request failed after multiple retries.");
-        }
-    }
+    });
 }
 
-// --- Word Game Logic ---
 
-function setupWordGame() {
-    const puzzle = gameState.currentPuzzle;
-    gameState.currentAnswer = [];
-    gameState.answerSlots = [];
+/**
+ * Fetches and displays the leaderboard.
+ * This is a placeholder; replace with your database logic.
+ */
+function loadLeaderboard() {
+    const list = document.getElementById('leaderboardEntries');
+    list.innerHTML = 'Loading...'; // Placeholder
+    
+    // --- DATABASE PLACEHOLDER ---
+    // In a real app, you would fetch this from your server/database.
+    setTimeout(() => {
+        const fakeData = [
+            { name: 'Player1', score: 1500 },
+            { name: 'Player_XYZ', score: 1250 },
+            { name: playerName, score: playerStats.currency },
+            { name: 'TestUser', score: 800 },
+        ].sort((a, b) => b.score - a.score);
+        
+        list.innerHTML = ''; // Clear loading
+        fakeData.forEach((entry, index) => {
+            const item = document.createElement('div');
+            item.className = 'friend-item'; // Reuse style
+            item.innerHTML = `<span>${index + 1}. 👤 ${entry.name}</span> <span>${entry.score}</span>`;
+            list.appendChild(item);
+        });
+    }, 1000);
+}
 
-    // Set level title and hint
-    document.getElementById('gameLevelTitle').textContent = `${translations[currentLanguage].level} ${gameState.currentLevel}`;
-    document.getElementById('gameHint').textContent = puzzle.hint;
-    updateCurrencyDisplays();
+/**
+ * Populates the background options in the Settings panel.
+ * MODIFIED: Now renders <img> or <i> tags based on iconUrl.
+ */
+function initSettings() {
+    const optionsContainer = document.getElementById('backgroundOptions');
+    optionsContainer.innerHTML = ''; // Clear old
+    
+    const savedBg = localStorage.getItem('drweee_background') || backgrounds[0].color;
+    let selectedOption = null;
 
-    // Create answer boxes
-    const answerContainer = document.getElementById('answerBoxes');
-    answerContainer.innerHTML = '';
-    for (let i = 0; i < puzzle.word.length; i++) {
-        const box = document.createElement('div');
-        box.className = 'answer-box';
-        box.dataset.index = i;
-        // Add click to remove letter
-        box.onclick = () => removeLetterFromAnswer(i);
-        answerContainer.appendChild(box);
-        gameState.answerSlots.push(box); // Store DOM element
-    }
+    backgrounds.forEach((bg) => {
+        const option = document.createElement('button');
+        option.className = 'bg-option';
+        option.title = bg.name; // For accessibility
 
-    // Create letter grid (3x4)
-    const gridContainer = document.getElementById('letterGrid');
-    gridContainer.innerHTML = '';
-    puzzle.letters.forEach((letter, index) => {
-        const tile = document.createElement('button');
-        tile.className = 'letter-tile';
-        tile.textContent = letter;
-        tile.dataset.gridIndex = index;
-        tile.onclick = () => addLetterToAnswer(letter, tile);
-        gridContainer.appendChild(tile);
+        if (bg.iconUrl && bg.iconUrl.startsWith('http')) {
+            // It's a full URL, use <img>
+            option.innerHTML = `<img src="${bg.iconUrl}" alt="${bg.name}" class="bg-icon-img">`;
+        } else if (bg.iconUrl) {
+            // It's a Feather icon name
+            option.innerHTML = `<i data-feather="${bg.iconUrl}"></i>`;
+        } else {
+            // Fallback to color
+            option.style.background = bg.color;
+        }
+
+        option.onclick = () => setBackground(bg.color, option);
+        optionsContainer.appendChild(option);
+        
+        if (bg.color === savedBg) {
+            selectedOption = option;
+        }
     });
 
-    // Make sure feather icons are rendered
+    // Apply the saved background
+    if (selectedOption) {
+        setBackground(savedBg, selectedOption);
+    } else {
+        setBackground(backgrounds[0].color, optionsContainer.children[0]);
+    }
+    
+    // Replace Feather icons added to the settings panel
+    // This will be called again when the panel is opened,
+    // but it's good to run it here too.
     feather.replace();
 }
 
-function addLetterToAnswer(letter, tileElement) {
-    if (gameState.currentAnswer.length >= gameState.currentPuzzle.word.length) {
-        return; // Answer is full
-    }
 
-    // Find first empty slot
-    const emptySlotIndex = gameState.currentAnswer.length;
-    const slot = gameState.answerSlots[emptySlotIndex];
+/**
+ * Sets the app's background and highlights the selected option.
+ */
+function setBackground(bgColor, selectedOption) {
+    document.getElementById('appContainer').style.backgroundImage = bgColor.startsWith('url') ? bgColor : '';
+    document.getElementById('appContainer').style.backgroundColor = bgColor.startsWith('url') ? '#FFF' : bgColor; // Fallback for non-gradient
+    if (!bgColor.startsWith('url')) {
+        document.getElementById('appContainer').style.backgroundImage = bgColor;
+    }
     
-    if (slot) {
-        slot.textContent = letter;
-        slot.classList.add('filled');
-        tileElement.disabled = true;
-        
-        // Store the letter and the grid button's index
-        gameState.currentAnswer.push({
-            letter: letter,
-            gridIndex: tileElement.dataset.gridIndex,
-            answerIndex: emptySlotIndex
-        });
-    }
-
-    // Check for win
-    if (gameState.currentAnswer.length === gameState.currentPuzzle.word.length) {
-        checkWord();
+    localStorage.setItem('drweee_background', bgColor);
+    
+    document.querySelectorAll('.bg-option').forEach(opt => opt.classList.remove('selected'));
+    if(selectedOption) {
+        selectedOption.classList.add('selected');
     }
 }
 
-function removeLetterFromAnswer(answerIndex) {
-    const letterToRemove = gameState.currentAnswer.find(item => item.answerIndex === answerIndex);
+/**
+ * Updates all player-facing stats on the UI.
+ */
+function updateUIStats() {
+    const formattedCurrency = playerStats.currency.toLocaleString();
+    document.getElementById('mainCurrency').textContent = formattedCurrency;
+    document.getElementById('gameCurrency').textContent = formattedCurrency;
     
-    if (!letterToRemove) return; // Slot already empty
-
-    // Remove this letter and all letters after it
-    const lettersToRemove = gameState.currentAnswer.splice(answerIndex);
+    // MODIFIED: Progress is now 0-10, so multiply by 10 for percentage
+    const progressPercent = playerStats.progress * 10; 
+    document.getElementById('levelProgress').style.width = `${progressPercent}%`;
+    // MODIFIED: Show progress out of 10
+    document.getElementById('progressValue').textContent = `${playerStats.progress}/10`; 
     
-    lettersToRemove.forEach(item => {
-        // Re-enable the grid button
-        const gridButton = document.querySelector(`.letter-tile[data-grid-index="${item.gridIndex}"]`);
-        if (gridButton) {
-            gridButton.disabled = false;
-        }
-        // Clear the answer slot
-        const answerSlot = gameState.answerSlots[item.answerIndex];
-        if (answerSlot) {
-            answerSlot.textContent = '';
-            answerSlot.classList.remove('filled');
-        }
-    });
-}
-
-function clearAnswer() {
-    // Kept from previous build, but not in new UI.
-    // Can be triggered by a "trash" icon if added back.
-    if (gameState.currentAnswer.length > 0) {
-        removeLetterFromAnswer(0);
-    }
-}
-
-// "Wand" icon
-function useHint() {
-    const cost = 50;
-    if (gameState.totalScore < cost) {
-        alert(translations[currentLanguage].notEnoughCoins);
-        return;
-    }
+    const levelText = `${translations[currentLanguage]?.continueLevel || 'Level'} ${playerStats.level}`;
+    document.getElementById('continueBtn').textContent = levelText;
     
-    const puzzle = gameState.currentPuzzle;
-    const answerWord = puzzle.word;
-    
-    // Find first incorrect or empty slot
-    let slotToFill = -1;
-    for (let i = 0; i < answerWord.length; i++) {
-        const currentLetter = gameState.currentAnswer[i] ? gameState.currentAnswer[i].letter : null;
-        if (currentLetter !== answerWord[i]) {
-            slotToFill = i;
-            break;
-        }
-    }
-    
-    if (slotToFill === -1) return; // Word is already correct
-
-    // Clear from this point
-    removeLetterFromAnswer(slotToFill);
-    
-    // Find the correct letter in the grid
-    const correctLetter = answerWord[slotToFill];
-    
-    // Find the *first available* button for the correct letter
-    let correctButton = null;
-    const allGridButtons = document.querySelectorAll('.letter-tile:not(:disabled)');
-    for (let btn of allGridButtons) {
-        if (btn.textContent === correctLetter) {
-            correctButton = btn;
-            break;
-        }
-    }
-
-    if (correctButton) {
-        gameState.totalScore -= cost;
-        updateCurrencyDisplays();
-        addLetterToAnswer(correctLetter, correctButton);
-    } else {
-        // This case shouldn't happen if AI prompt is correct
-        console.error("Hint letter not found in grid!");
-    }
-}
-
-// "Fire" icon
-function usePowerHint() {
-    const cost = 150;
-    if (gameState.totalScore < cost) {
-        alert(translations[currentLanguage].notEnoughCoins);
-        return;
-    }
-
-    const puzzle = gameState.currentPuzzle;
-    const answerLetters = new Set(puzzle.word.split(''));
-    
-    // Find 3 wrong letters on the grid
-    const wrongButtons = [];
-    const allGridButtons = document.querySelectorAll('.letter-tile:not(:disabled)');
-    
-    for (let btn of allGridButtons) {
-        if (!answerLetters.has(btn.textContent)) {
-            wrongButtons.push(btn);
-            if (wrongButtons.length >= 3) break;
-        }
-    }
-
-    if (wrongButtons.length > 0) {
-        gameState.totalScore -= cost;
-        updateCurrencyDisplays();
-        wrongButtons.forEach(btn => {
-            btn.disabled = true;
-            btn.style.opacity = '0.3'; // Make them fade
-        });
-    }
-}
-
-
-function checkWord() {
-    const puzzle = gameState.currentPuzzle;
-    const playerWord = gameState.currentAnswer.map(item => item.letter).join('');
-    
-    if (playerWord === puzzle.word) {
-        // Correct!
-        gameSession.playerStats.language.correct++;
-        soundEnabled && sounds.victory();
-        document.getElementById('levelCompletePanel').style.display = 'flex';
-    } else {
-        // Incorrect
-        gameSession.playerStats.language.wrong++;
-        soundEnabled && sounds.wrong();
-        const answerContainer = document.getElementById('answerBoxes');
-        answerContainer.classList.add('shake');
-        setTimeout(() => {
-            answerContainer.classList.remove('shake');
-            clearAnswer();
-        }, 500);
-    }
-}
-
-function updateCurrencyDisplays() {
-    document.getElementById('mainCurrency').textContent = gameState.totalScore;
-    document.getElementById('gameCurrency').textContent = gameState.totalScore;
+    const gameLevelText = `${translations[currentLanguage]?.level || 'Level'} ${playerStats.level}`;
+    document.getElementById('gameLevelTitle').textContent = gameLevelText;
 }
 
 // --- Audio ---
 
 function initAudio() {
-    if (audioContext) return; // Already initialized
     try {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         createSounds();
@@ -759,17 +517,20 @@ function initAudio() {
         console.log('Audio not supported');
     }
 }
+
 function createSounds() {
-    sounds = {
-        correct: () => playTone(800, 0.2, 'sine'),
-        wrong: () => playTone(200, 0.3, 'sawtooth'),
-        victory: () => {
-            playTone(523, 0.2, 'sine');
-            setTimeout(() => playTone(659, 0.2, 'sine'), 200);
-            setTimeout(() => playTone(784, 0.3, 'sine'), 400);
-        }
+    sounds = {};
+    sounds.correct = () => playTone(800, 0.1, 'sine');
+    sounds.wrong = () => playTone(200, 0.2, 'sawtooth');
+    sounds.click = () => playTone(500, 0.1, 'triangle');
+    sounds.win = () => {
+        playTone(523, 0.1, 'sine');
+        setTimeout(() => playTone(659, 0.1, 'sine'), 100);
+        setTimeout(() => playTone(784, 0.2, 'sine'), 200);
     };
+    sounds.hint = () => playTone(700, 0.1, 'triangle');
 }
+
 function playTone(e, t, n = 'sine') {
     if (!soundEnabled || !audioContext) return;
     const o = audioContext.createOscillator(), a = audioContext.createGain();
@@ -782,6 +543,7 @@ function playTone(e, t, n = 'sine') {
     o.start(audioContext.currentTime);
     o.stop(audioContext.currentTime + t);
 }
+
 function playBackgroundMusic() {
     if (!audioContext) return;
     if (bgMusic) bgMusic.stop();
@@ -789,139 +551,477 @@ function playBackgroundMusic() {
     const e = audioContext.createGain();
     bgMusic.connect(e);
     e.connect(audioContext.destination);
-    bgMusic.frequency.value = 220;
+    bgMusic.frequency.value = 100; // Low hum
     bgMusic.type = 'sine';
     e.gain.setValueAtTime(0.05 * musicVolume, audioContext.currentTime);
     bgMusic.start();
     bgMusic.loop = true;
 }
 
-// --- Database Placeholder Function ---
-function saveScoreToDatabase(score) {
-    console.log(`Attempting to save score: ${score} for player: ${playerName}`);
-    // Save to server
-    /*
-    fetch(DB_CONFIG.SCORE_POST_URL, {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + DB_CONFIG.API_KEY,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            playerName: playerName,
-            score: score,
-            playerCode: playerCode,
-            level: gameState.currentLevel
-        })
-    })
-    .then(response => response.json())
-    .then(data => console.log('Score saved successfully:', data))
-    .catch(error => console.error('Error saving score:', error));
-    */
+
+// --- Game Logic ---
+
+/**
+ * Starts the game: loads a puzzle and shows the game screen.
+ */
+function startGame() {
+    console.log("Starting game...");
+    sounds.click();
+    
+    // Show AI loading spinner
+    document.getElementById('aiLoader').style.display = 'flex';
+    document.getElementById('mainMenu').style.display = 'none';
+
+    loadPuzzleFromAI();
 }
 
+/**
+ * Fetches a new puzzle from the Gemini API.
+ */
+async function loadPuzzleFromAI() {
+    const aiLoaderText = document.getElementById('aiLoaderText');
+    aiLoaderText.textContent = translations[currentLanguage].aiLoading;
+
+    // Analyze player stats to find weakest topic
+    let weakestTopic = 'general';
+    let minScore = 1;
+    for (const [topic, stats] of Object.entries(playerStats.topics)) {
+        const score = stats.total === 0 ? 0 : stats.correct / stats.total;
+        if (score < minScore && stats.total > 0) { // Prefer topics they've tried
+            minScore = score;
+            weakestTopic = topic;
+        } else if (stats.total === 0) { // Or try a new topic
+             weakestTopic = topic;
+        }
+    }
+
+    // Construct the prompt
+    const lang = currentLanguage.toUpperCase();
+    const prompt = `
+      You are a fun word puzzle game creator.
+      Provide one (1) new puzzle for a word game.
+      The player is at Level ${playerStats.level}.
+      The player's weakest category is "${weakestTopic}".
+      The game language must be ${lang}.
+      
+      The puzzle word must be between 4 and 8 letters long.
+      The puzzle must include a hint, the word, the category, and 12 letters for the grid.
+      The 12 letters MUST include all unique letters of the word.
+      The 12 letters MUST be provided as a single, shuffled string.
+      
+      Respond ONLY with a valid JSON object in this exact format:
+      {
+        "word": "...",
+        "hint": "...",
+        "category": "...",
+        "letters": "..."
+      }
+      
+      Example for ${lang}:
+      {
+        "word": "${translations[lang]?.word || 'WORD'}",
+        "hint": "${translations[lang]?.hint || 'HINT'}",
+        "category": "${translations[lang]?.category || 'CATEGORY'}",
+        "letters": "${translations[lang]?.letters || 'ABCDEFGHIJKL'}"
+      }
+    `;
+
+    // --- API Call ---
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${config.API_KEY}`;
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    temperature: 1.0, // Be creative
+                }
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.candidates || !data.candidates[0].content) {
+             throw new Error("Invalid AI response structure.");
+        }
+        
+        const jsonString = data.candidates[0].content.parts[0].text;
+        const puzzleData = JSON.parse(jsonString);
+
+        if (!puzzleData.word || !puzzleData.hint || !puzzleData.letters || puzzleData.letters.length !== 12) {
+            throw new Error("Parsed JSON is missing required fields.");
+        }
+        
+        setupPuzzle(puzzleData);
+
+    } catch (error) {
+        console.error("AI Error:", error);
+        
+        // --- Fallback ---
+        if (error.message.includes("API Error") || error.message.includes("Invalid AI response")) {
+            // Serious error, show game over panel
+            aiLoaderText.textContent = translations[currentLanguage].puzzleError;
+            setTimeout(showGameOver, 2000);
+        } else {
+            // Parsing error, try again
+            aiLoaderText.textContent = translations[currentLanguage].puzzleParseError;
+            setTimeout(loadPuzzleFromAI, 2000); // Retry
+        }
+    }
+}
+
+/**
+ * Shows the game over/error panel.
+ */
+function showGameOver() {
+    document.getElementById('aiLoader').style.display = 'none';
+    document.getElementById('gameOverPanel').style.display = 'block';
+    document.getElementById('gameOverTip').textContent = translations[currentLanguage].aiError;
+}
+
+/**
+ * Retries loading a game after an error.
+ */
+function retryGame() {
+    document.getElementById('gameOverPanel').style.display = 'none';
+    startGame(); // Try again from the start
+}
+
+/**
+ * Sets up the game UI with the new puzzle data.
+ */
+function setupPuzzle(puzzleData) {
+    // 1. Set global puzzle state
+    currentPuzzle.word = puzzleData.word.toUpperCase();
+    currentPuzzle.hint = puzzleData.hint;
+    currentPuzzle.letters = puzzleData.letters.toUpperCase().split('');
+    currentPuzzle.answer = Array(currentPuzzle.word.length).fill(null);
+    currentPuzzle.filledIndexes = [];
+    currentPuzzle.firstEmptyBox = 0;
+    
+    // 2. Update Hint
+    document.getElementById('gameHint').textContent = currentPuzzle.hint;
+    
+    // 3. Create Answer Boxes
+    const answerContainer = document.getElementById('answerBoxes');
+    answerContainer.innerHTML = '';
+    for (let i = 0; i < currentPuzzle.word.length; i++) {
+        const box = document.createElement('div');
+        box.className = 'answer-box';
+        box.dataset.index = i;
+        box.onclick = () => onAnswerBoxClick(i, box);
+        answerContainer.appendChild(box);
+    }
+    
+    // 4. Create Letter Grid
+    const gridContainer = document.getElementById('letterGrid');
+    gridContainer.innerHTML = '';
+    currentPuzzle.letters.forEach((letter, index) => {
+        const tile = document.createElement('button');
+        tile.className = 'letter-tile';
+        tile.textContent = letter;
+        tile.dataset.index = index;
+        tile.onclick = () => onLetterTileClick(letter, index, tile);
+        gridContainer.appendChild(tile);
+    });
+    
+    // 5. Hide loader, show game
+    document.getElementById('aiLoader').style.display = 'none';
+    document.getElementById('gameContainer').style.display = 'flex';
+}
+
+/**
+ * Handles clicking on a letter tile.
+ */
+function onLetterTileClick(letter, tileIndex, tileElement) {
+    sounds.click();
+    
+    // Find the first empty answer box
+    const boxIndex = currentPuzzle.answer.indexOf(null);
+    if (boxIndex === -1) {
+        return; // Word is full
+    }
+    
+    // Disable the tile
+    tileElement.disabled = true;
+    
+    // Fill the box
+    currentPuzzle.answer[boxIndex] = letter;
+    currentPuzzle.filledIndexes[boxIndex] = tileIndex; // Store which tile filled this box
+    
+    // Update the box UI
+    const boxElement = document.getElementById('answerBoxes').children[boxIndex];
+    boxElement.textContent = letter;
+    boxElement.classList.add('filled');
+    
+    // Check for win
+    if (currentPuzzle.answer.indexOf(null) === -1) {
+        checkWord();
+    }
+}
+
+/**
+ * Handles clicking on a filled answer box to return the letter.
+ */
+function onAnswerBoxClick(boxIndex, boxElement) {
+    if (currentPuzzle.answer[boxIndex] === null) {
+        return; // Box is already empty
+    }
+    
+    sounds.click();
+    
+    // Get the letter and the tile index that filled it
+    const letter = currentPuzzle.answer[boxIndex];
+    const tileIndex = currentPuzzle.filledIndexes[boxIndex];
+    
+    // Empty the box
+    currentPuzzle.answer[boxIndex] = null;
+    currentPuzzle.filledIndexes[boxIndex] = null;
+    boxElement.textContent = '';
+    boxElement.classList.remove('filled');
+    
+    // Re-enable the original letter tile
+    const tileElement = document.querySelector(`.letter-tile[data-index="${tileIndex}"]`);
+    if (tileElement) {
+        tileElement.disabled = false;
+    }
+}
+
+/**
+ * Checks if the filled word is correct.
+ */
+function checkWord() {
+    const guessedWord = currentPuzzle.answer.join('');
+    
+    if (guessedWord === currentPuzzle.word) {
+        // --- WIN ---
+        sounds.win();
+        playerStats.currency += 10; // Reward
+        
+        // MODIFIED: Level-up logic
+        playerStats.progress += 1; // 1 more word solved
+        
+        if (playerStats.progress >= 10) {
+            // Level Up!
+            playerStats.level += 1;
+            playerStats.progress = 0; // Reset for next level
+        }
+        
+        // Save stats
+        localStorage.setItem('drweee_currency', playerStats.currency);
+        localStorage.setItem('drweee_level', playerStats.level);
+        localStorage.setItem('drweee_progress', playerStats.progress);
+        
+        // Update stats
+        updateUIStats();
+        
+        // Show Level Complete panel
+        document.getElementById('levelCompletePanel').style.display = 'block';
+        
+    } else {
+        // --- LOSE ---
+        sounds.wrong();
+        const answerContainer = document.getElementById('answerBoxes');
+        answerContainer.classList.add('shake');
+        setTimeout(() => {
+            answerContainer.classList.remove('shake');
+            // Return all letters
+            resetAnswerBoxes();
+        }, 500);
+    }
+}
+
+/**
+ * Returns all letters from answer boxes to the grid.
+ */
+function resetAnswerBoxes() {
+    for (let i = 0; i < currentPuzzle.word.length; i++) {
+        onAnswerBoxClick(i, document.getElementById('answerBoxes').children[i]);
+    }
+}
+
+/**
+ * Called from Level Complete panel to start the next level.
+ */
+function nextLevel() {
+    document.getElementById('levelCompletePanel').style.display = 'none';
+    startGame(); // Load a new puzzle
+}
+
+/**
+ * Returns to the Main Menu from the game.
+ */
+function backToMenu() {
+    document.getElementById('gameContainer').style.display = 'none';
+    document.getElementById('mainMenu').style.display = 'flex';
+}
+
+/**
+ * Uses the "Flame" hint (solves the puzzle).
+ */
+function usePowerHint() {
+    if (playerStats.currency < 150) return; // Not enough currency
+    sounds.hint();
+    playerStats.currency -= 150;
+    updateUIStats();
+
+    // Fill the answer boxes with the correct word
+    resetAnswerBoxes();
+    const answerContainer = document.getElementById('answerBoxes');
+    const wordLetters = currentPuzzle.word.split('');
+    
+    wordLetters.forEach((letter, index) => {
+        // Find the first available tile with this letter
+        const tileElement = document.querySelector(`.letter-tile:not(:disabled)[data-letter="${letter}"]`);
+        
+        // This is tricky. Let's just show the word directly.
+        const boxElement = answerContainer.children[index];
+        boxElement.textContent = letter;
+        boxElement.classList.add('filled');
+        currentPuzzle.answer[index] = letter;
+    });
+    
+    // Disable all letter tiles
+    document.querySelectorAll('.letter-tile').forEach(t => t.disabled = true);
+    
+    // Auto-win
+    setTimeout(() => {
+        checkWord(); // This will now be correct
+    }, 500);
+}
+
+/**
+ * Uses the "Wand" hint (reveals one letter).
+ */
+function useHint() {
+    if (playerStats.currency < 50) return; // Not enough currency
+    sounds.hint();
+    playerStats.currency -= 50;
+    updateUIStats();
+    
+    // Find the first empty box
+    const firstEmptyIndex = currentPuzzle.answer.indexOf(null);
+    if (firstEmptyIndex === -1) return; // Word is full
+    
+    // Get the correct letter for that box
+    const correctLetter = currentPuzzle.word[firstEmptyIndex];
+    
+    // Find the first available tile with that letter
+    const tileElement = document.querySelector(`.letter-tile:not(:disabled)`);
+    
+    // Find the *correct* tile
+    let tileToDisable = null;
+    let tileIndexToDisable = -1;
+
+    for (let i = 0; i < currentPuzzle.letters.length; i++) {
+        const tile = document.querySelector(`.letter-tile[data-index="${i}"]`);
+        if (!tile.disabled && tile.textContent === correctLetter) {
+            tileToDisable = tile;
+            tileIndexToDisable = i;
+            break;
+        }
+    }
+    
+    if (tileToDisable) {
+        // Simulate clicking it
+        tileToDisable.disabled = true;
+        
+        // Fill the box
+        currentPuzzle.answer[firstEmptyIndex] = correctLetter;
+        currentPuzzle.filledIndexes[firstEmptyIndex] = tileIndexToDisable;
+        
+        // Update the box UI
+        const boxElement = document.getElementById('answerBoxes').children[firstEmptyIndex];
+        boxElement.textContent = correctLetter;
+        boxElement.classList.add('filled');
+        
+        // Check for win
+        if (currentPuzzle.answer.indexOf(null) === -1) {
+            checkWord();
+        }
+    }
+}
 
 // --- Event Listeners & Initialization ---
 
-// Attach input handlers safely (guard when elements are missing)
-const _musicEl = document.getElementById('musicVolume');
-if (_musicEl) {
-    _musicEl.addEventListener('input', e => {
-        musicVolume = e.target.value / 100;
-        if (bgMusic && audioContext) playBackgroundMusic();
-    });
+/**
+ * Handles clicking on the background to close panels.
+ */
+function handleBackdropClick(event) {
+    if (event.target.id === 'mainMenu') {
+        // MODIFIED: Check if panels are open before toggling
+        if (document.getElementById('settingsPanel').style.display === 'block') {
+            toggleSettings();
+        }
+        if (document.getElementById('friendsPanel').style.display === 'block') {
+            closeFriends();
+        }
+        if (document.getElementById('leaderboardPanel').style.display === 'block') {
+            closeLeaderboard();
+        }
+    }
 }
-const _sfxEl = document.getElementById('sfxVolume');
-if (_sfxEl) {
-    _sfxEl.addEventListener('input', e => {
+
+window.onload = () => {
+    // 1. Load Saved Data
+    playerName = localStorage.getItem('drweee_playerName') || 'Player';
+    playerStats.currency = parseInt(localStorage.getItem('drweee_currency') || '1230', 10);
+    playerStats.level = parseInt(localStorage.getItem('drweee_level') || '1', 10);
+    // MODIFIED: Default progress is 0
+    playerStats.progress = parseInt(localStorage.getItem('drweee_progress') || '0', 10); 
+    
+    const savedLang = localStorage.getItem('drweee_language') || 'ar';
+    currentLanguage = savedLang;
+    currentLangIndex = languages.indexOf(savedLang);
+    
+    try {
+        friends = JSON.parse(localStorage.getItem('drweee_friends') || '[]');
+    } catch (e) { friends = []; }
+    
+    playerCode = generatePlayerCode();
+    
+    // 2. Initialize UI
+    initSettings(); // Sets up backgrounds
+    updateLanguage(); // Sets all text
+    updateUIStats(); // Sets currency, level, etc.
+    
+    // 3. Set initial slider values
+    document.getElementById('musicVolume').value = musicVolume * 100;
+    document.getElementById('sfxVolume').value = sfxVolume * 100;
+    document.getElementById('playerCode').textContent = playerCode;
+    
+    // 4. Add listeners
+    document.getElementById('musicVolume').addEventListener('input', e => {
+        musicVolume = e.target.value / 100;
+        if (bgMusic) bgMusic.gain.setValueAtTime(0.05 * musicVolume, audioContext.currentTime);
+    });
+    document.getElementById('sfxVolume').addEventListener('input', e => {
         sfxVolume = e.target.value / 100;
     });
-}
-const _playerNameEl = document.getElementById('playerNameInput');
-if (_playerNameEl) {
-    _playerNameEl.addEventListener('change', e => {
+    document.getElementById('playerNameInput').addEventListener('change', e => {
         playerName = e.target.value || 'Player';
         localStorage.setItem('drweee_playerName', playerName);
     });
-}
-
-// --- Game Initialization ---
-function simulateLoading() {
-    let progress = 0;
-    const bar = document.getElementById('loadingBar');
-    const text = document.getElementById('loadingText');
-    const interval = setInterval(() => {
-        progress += Math.random() * 10;
-        if (progress > 100) progress = 100;
-        
-        // Check if elements exist before updating
-        if (bar) bar.style.width = progress + '%';
-        if (text) text.textContent = `Loading... ${Math.round(progress)}%`;
-        
-        if (progress === 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('loadingScreen');
-                if (loadingScreen) {
-                    loadingScreen.style.opacity = '0';
-                    loadingScreen.addEventListener('transitionend', () => {
-                        loadingScreen.style.display = 'none';
-                    });
-                }
-                // Audio now inits on first *real* user interaction
-                document.body.addEventListener('click', initAudio, { once: true });
-                document.body.addEventListener('touchstart', initAudio, { once: true });
-            }, 500);
-        }
-    }, 200);
-}
-
-// Load data and start game
-window.onload = () => {
-    // Load saved data
-    const savedName = localStorage.getItem('drweee_playerName');
-    if (savedName) {
-        playerName = savedName;
-    }
-    const savedFriends = localStorage.getItem('drweee_friends');
-    if (savedFriends) {
-        try {
-            friends = JSON.parse(savedFriends);
-        } catch (e) { friends = []; }
-    }
-    const savedLevel = localStorage.getItem('drweee_level');
-    if (savedLevel) {
-        gameState.currentLevel = parseInt(savedLevel, 10);
-    }
-    const savedScore = localStorage.getItem('drweee_score');
-    if (savedScore) {
-        gameState.totalScore = parseInt(savedScore, 10);
-    }
-    const savedProgress = localStorage.getItem('drweee_progress');
-    if (savedProgress) {
-        gameState.levelProgress = parseInt(savedProgress, 10);
-    }
     
-    playerCode = generatePlayerCode();
-    // Set slider defaults only if elements exist
-    const _mv = document.getElementById('musicVolume');
-    if (_mv) _mv.value = musicVolume * 100;
-    const _sv = document.getElementById('sfxVolume');
-    if (_sv) _sv.value = sfxVolume * 100;
-    
-    initSettings(); // Setup backgrounds
-    changeLanguage(); // Set language and initial translations
-    updateMainScreenUI();
-    
-    // Check if loading screen exists
-    if (document.getElementById('loadingScreen')) {
-        simulateLoading();
-    } else {
-        // Fallback if loading screen was removed
-        document.body.addEventListener('click', initAudio, { once: true });
-        document.body.addEventListener('touchstart', initAudio, { once: true });
-    }
+    // Listener for closing panels
+    document.getElementById('mainMenu').addEventListener('click', handleBackdropClick);
 
-    // Activate Feather Icons
+    // 5. Replace all initial icons
     feather.replace();
+    
+    // 6. Show Main Menu (after hiding loading)
+    setTimeout(() => {
+        document.getElementById('loadingScreen').style.opacity = '0';
+        setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
+        
+        // Try to init audio after a short delay (user interaction is better)
+        setTimeout(initAudio, 500);
+    }, 1000); // Simulate load time
 };
