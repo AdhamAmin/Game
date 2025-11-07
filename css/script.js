@@ -628,7 +628,7 @@ function drawMap() {
     mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
     const gradient = mapCtx.createLinearGradient(0, 0, 0, mapCanvas.height);
     gradient.addColorStop(0, '#a8edea');
-    gradient.addColorStop(1, '#fed6e3');
+    gradient.addColorStop(1, '#fe6fe3');
     mapCtx.fillStyle = gradient;
     mapCtx.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
 
