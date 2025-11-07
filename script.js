@@ -14,7 +14,7 @@ const DB_CONFIG = {
 };
 
 // --- Game State Variables ---
-let currentLanguage = 'en';
+let currentLanguage = 'ar'; // Default to Arabic as per image
 let soundEnabled = true;
 let musicVolume = 0.5;
 let sfxVolume = 0.7;
@@ -823,25 +823,23 @@ function saveScoreToDatabase(score) {
 
 // --- Event Listeners & Initialization ---
 
-// Safely attach event listeners only if the elements exist (prevents runtime errors in dev/test pages)
-const _musicVolumeEl = document.getElementById('musicVolume');
-if (_musicVolumeEl) {
-    _musicVolumeEl.addEventListener('input', e => {
+// Attach input handlers safely (guard when elements are missing)
+const _musicEl = document.getElementById('musicVolume');
+if (_musicEl) {
+    _musicEl.addEventListener('input', e => {
         musicVolume = e.target.value / 100;
-        if (bgMusic && audioContext) {
-            playBackgroundMusic();
-        }
+        if (bgMusic && audioContext) playBackgroundMusic();
     });
 }
-const _sfxVolumeEl = document.getElementById('sfxVolume');
-if (_sfxVolumeEl) {
-    _sfxVolumeEl.addEventListener('input', e => {
+const _sfxEl = document.getElementById('sfxVolume');
+if (_sfxEl) {
+    _sfxEl.addEventListener('input', e => {
         sfxVolume = e.target.value / 100;
     });
 }
-const _playerNameInputEl = document.getElementById('playerNameInput');
-if (_playerNameInputEl) {
-    _playerNameInputEl.addEventListener('change', e => {
+const _playerNameEl = document.getElementById('playerNameInput');
+if (_playerNameEl) {
+    _playerNameEl.addEventListener('change', e => {
         playerName = e.target.value || 'Player';
         localStorage.setItem('drweee_playerName', playerName);
     });
@@ -905,8 +903,11 @@ window.onload = () => {
     }
     
     playerCode = generatePlayerCode();
-    document.getElementById('musicVolume').value = musicVolume * 100;
-    document.getElementById('sfxVolume').value = sfxVolume * 100;
+    // Set slider defaults only if elements exist
+    const _mv = document.getElementById('musicVolume');
+    if (_mv) _mv.value = musicVolume * 100;
+    const _sv = document.getElementById('sfxVolume');
+    if (_sv) _sv.value = sfxVolume * 100;
     
     initSettings(); // Setup backgrounds
     changeLanguage(); // Set language and initial translations
