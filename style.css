@@ -193,7 +193,7 @@ body {
 .icon-btn:active {
     transform: scale(0.9);
 }
-/* Specific style for language button to add glass bg back */
+/* MODIFIED: Style for Language Button RE-ADDED */
 #languageBtn {
     background: var(--color-glass);
     backdrop-filter: blur(10px);
@@ -651,7 +651,7 @@ body {
     font-weight: 700;
 }
 
-/* NEW: Language Panel */
+/* MODIFIED: Language Panel RE-ADDED */
 .language-options {
     display: flex;
     flex-direction: column;
