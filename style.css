@@ -47,14 +47,14 @@ body {
 #appContainer {
     width: 100%;
     height: 100%;
-    /* max-width: 500px; <-- REMOVED this line */
-    /* margin: 0 auto; <-- REMOVED this line */
+    /* max-width: 500px; <-- Removed for fullscreen */
+    /* margin: 0 auto; <-- Removed for fullscreen */
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    /* box-shadow: 0 0 30px rgba(0,0,0,0.5); <-- Removed for fullscreen */
     transition: background-image 0.5s ease-in-out;
 }
 
@@ -95,6 +95,7 @@ body {
 }
 .loading-bar-container {
     width: 80%;
+    max-width: 400px; /* Added max-width for large screens */
     height: 20px;
     background: rgba(255,255,255,0.3);
     border-radius: 10px;
@@ -130,10 +131,18 @@ body {
 /* --- Top Bar (Shared) --- */
 .top-bar {
     width: 100%;
+    max-width: 1200px; /* Constrain top bar width on large screens */
+    margin: 0 auto; /* Center top bar on large screens */
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
+}
+/* New container for left items */
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 2vw, 12px);
 }
 .currency-display {
     display: flex;
@@ -152,7 +161,6 @@ body {
     height: clamp(18px, 4vw, 20px);
     stroke-width: 3px;
 }
-/* ADDED THIS RULE for your new points icon */
 .currency-display .currency-icon {
     width: clamp(18px, 4vw, 20px);
     height: clamp(18px, 4vw, 20px);
@@ -200,6 +208,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
+    margin: auto 0; /* Center content vertically */
 }
 .game-title {
     font-family: var(--font-title);
@@ -266,22 +275,33 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2), 0 2px 0 var(--color-primary-dark) inset;
 }
 
+/* Language Selector (Moved to top bar) */
 .language-selector-container {
-    width: 100%;
+   display: none; /* Old one is hidden */
+}
+
+/* New Circle Style for Language Selector */
+.language-select-circle {
+    width: clamp(40px, 10vw, 48px);
+    height: clamp(40px, 10vw, 48px);
+    border-radius: 50%;
+    background: var(--color-glass);
+    backdrop-filter: blur(10px);
+    border: none;
+    color: var(--color-light);
     display: flex;
     justify-content: center;
-}
-#languageSelect {
-    background: var(--color-glass);
-    color: var(--color-light);
-    border: none;
-    border-radius: 10px;
-    padding: 8px 12px;
-    font-family: var(--font-main);
-    font-weight: 700;
+    align-items: center;
     cursor: pointer;
+    transition: all 0.2s;
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    padding: 0;
+    text-align: center;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
-#languageSelect option {
+.language-select-circle option {
     color: var(--color-dark);
 }
 
@@ -299,13 +319,13 @@ body {
     flex-direction: column;
     justify-content: space-around;
     width: 100%;
-    max-width: 800px; /* ADDED: Constrain puzzle content on wide screens */
-    margin: 0 auto; /* ADDED: Center puzzle content */
+    max-width: 800px; /* Constrain puzzle content on wide screens */
+    margin: 0 auto; /* Center puzzle content */
 }
 .hint-box {
     width: 100%;
-    max-width: 600px; /* ADDED: Constrain hint box width */
-    margin: 0 auto; /* ADDED: Center hint box */
+    max-width: 600px; /* Constrain hint box width */
+    margin: 0 auto; /* Center hint box */
     min-height: 50px;
     padding: clamp(12px, 3vw, 16px);
     background: var(--color-light);
@@ -362,7 +382,7 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: clamp(10px, 2.5vw, 15px);
     width: 100%;
-    max-width: 500px; /* CHANGED: Was 360px */
+    max-width: 500px; /* Constrain grid width */
     margin: 0 auto;
 }
 .letter-tile {
@@ -394,6 +414,8 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    max-width: 600px; /* Constrain footer width */
+    margin: 0 auto; /* Center footer */
 }
 .power-up-btn {
     display: flex;
@@ -410,6 +432,11 @@ body {
 .power-up-btn i {
     width: clamp(24px, 6vw, 30px);
     height: clamp(24px, 6vw, 30px);
+}
+.power-up-btn .power-up-icon {
+    width: clamp(24px, 6vw, 30px);
+    height: clamp(24px, 6vw, 30px);
+    object-fit: contain;
 }
 .power-up-btn span {
     font-weight: 700;
@@ -558,8 +585,12 @@ body {
     cursor: pointer;
 }
 
-/* RTL Specifics */
+/* --- RTL Specifics --- */
 [dir="rtl"] .top-bar {
+    flex-direction: row-reverse;
+}
+/* This needs to be undone for the new layout */
+[dir="rtl"] .top-bar-left {
     flex-direction: row-reverse;
 }
 [dir="rtl"] .icon-buttons {
@@ -583,7 +614,7 @@ body {
     margin-left: auto;
 }
 
-/* ADDED: Media Query for larger screens (tablets/PCs) */
+/* Media Query for larger screens (tablets/PCs) */
 @media (min-width: 600px) {
     .panel {
         bottom: auto; /* Un-stick from bottom */
