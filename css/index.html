@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Viewport tag is crucial for responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DRWEEE WORLD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- AI Loading Spinner -->
+    <div class="ai-loader-overlay" id="aiLoader">
+        <div class="ai-loader-spinner"></div>
+        <p id="aiLoaderText">Building your challenge...</p>
+    </div>
+
+    <div class="top-bar">
+        <div class="language-selector">
+            <select id="languageSelect" onchange="changeLanguage()">
+                <option value="en">🇬🇧 English</option>
+                <option value="ar">🇸🇦 العربية</option>
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="es">🇪🇸 Español</option>
+            </select>
+        </div>
+        <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+    </div>
+
+    <div class="loading-screen" id="loadingScreen">
+        <h1 class="loading-title">🎮 Dr.WEEE's World 🎮</h1>
+        <div class="loading-bar-container"><div class="loading-bar" id="loadingBar"></div></div>
+        <p class="loading-text" id="loadingText">Loading... 0%</p>
+    </div>
+
+    <div class="sky" id="sky-animation">
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+    </div>
+
+    <div class="container" id="mainMenu" style="display: none;">
+        <h1 class="game-title" data-lang="title">Dr.WEEE's World</h1>
+        
+        <div class="main-layout">
+            <div class="character-display left">
+                <img src="https://placehold.co/150x200/7cb342/ecf0f1?text=Dr.WEEE&font=fredoka+one" alt="Dr. WEEE" class="character-img" id="boyImg" onerror="this.src='https://placehold.co/150x200/7cb342/ecf0f1?text=Dr.WEEE&font=fredoka+one'">
+                <div class="character-name" data-lang="drweee">Dr. WEEE</div>
+            </div>
+            
+            <div class="menu">
+                <button class="menu-btn" onclick="selectCharacterAndStart('boy')" data-lang="playAsBoy">🎮 Play as Dr. WEEE</button>
+                <button class="menu-btn" onclick="selectCharacterAndStart('girl')" data-lang="playAsGirl">🎀 Play as Dr. WEEENA</button>
+                <button class="menu-btn" onclick="startRace()" data-lang="raceChallenge">🏎️ Race Challenge</button>
+                <button class="menu-btn" onclick="showLeaderboard()" data-lang="leaderboard">🏆 Leaderboard</button>
+                <button class="menu-btn" onclick="showFriends()" data-lang="friends">👥 Friends</button>
+            </div>
+            
+            <div class="character-display right">
+                <img src="https://placehold.co/150x200/e74c3c/ecf0f1?text=Dr.WEEENA&font=fredoka+one" alt="Dr. WEEENA" class="character-img" id="girlImg" onerror="this.src='https://placehold.co/150x200/e74c3c/ecf0f1?text=Dr.WEEENA&font=fredoka+one'">
+                <div class="character-name" data-lang="drweeena">Dr. WEEENA</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <h2>⚙️ <span data-lang="settings">Settings</span></h2>
+        <div class="setting-item">
+            <label class="setting-label" data-lang="musicVolume">Music Volume</label>
+            <input type="range" class="volume-slider" id="musicVolume" min="0" max="100" value="50">
+        </div>
+        <div class="setting-item">
+            <label class="setting-label" data-lang="sfxVolume">SFX Volume</label>
+            <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="70">
+        </div>
+        <div class="setting-item">
+            <label class="setting-label" data-lang="playerName">Player Name</label>
+            <input type="text" class="name-input" id="playerNameInput" placeholder="Enter your name" maxlength="20">
+        </div>
+        <div class="setting-item">
+            <label class="setting-label" data-lang="chooseBackground">Choose Background</label>
+            <div class="background-options" id="backgroundOptions">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+        <div class="setting-item">
+            <label class="setting-label" data-lang="yourCode">Your Player Code</label>
+            <div class="player-code" id="playerCode">LOADING...</div>
+        </div>
+        <button class="continue-btn" onclick="toggleSettings()" data-lang="close">Close</button>
+    </div>
+
+    <!-- Friends Panel -->
+    <div class="friends-panel" id="friendsPanel">
+        <h2>👥 <span data-lang="friends">Friends</span></h2>
+        <div class="setting-item">
+            <label class="setting-label" data-lang="addFriend">Add Friend by Code</label>
+            <input type="text" class="code-input" id="friendCodeInput" placeholder="Enter friend code" maxlength="8">
+            <button class="continue-btn" onclick="addFriend()" data-lang="add">Add Friend</button>
+        </div>
+        <div class="friends-list" id="friendsList"></div>
+        <button class="back-btn" onclick="closeFriends()" data-lang="close">Close</button>
+    </div>
+
+    <!-- Car Selection -->
+    <div class="car-selection" id="carSelection">
+        <h2>🏎️ <span data-lang="chooseColor">Choose Your Car Color</span></h2>
+        <div class="car-color-options">
+            <div class="car-color selected" style="background: #3498db;" onclick="selectCarColor('#3498db')"></div>
+            <div class="car-color" style="background: #e74c3c;" onclick="selectCarColor('#e74c3c')"></div>
+            <div class="car-color" style="background: #2ecc71;" onclick="selectCarColor('#2ecc71')"></div>
+            <div class="car-color" style="background: #f39c12;" onclick="selectCarColor('#f39c12')"></div>
+            <div class="car-color" style="background: #9b59b6;" onclick="selectCarColor('#9b59b6')"></div>
+            <div class="car-color" style="background: #1abc9c;" onclick="selectCarColor('#1abc9c')"></div>
+        </div>
+        <button class="continue-btn" onclick="startRaceWithColor()" data-lang="startRace">Start Race!</button>
+    </div>
+
+    <!-- Game Over Panel (now for Word Game) -->
+    <div class="game-over-panel" id="gameOverPanel">
+        <h2>😢 <span data-lang="gameOver">Game Over!</span></h2>
+        <div class="info-tip" id="gameOverTip"></div>
+        <button class="retry-btn" onclick="retryWordGame()" data-lang="tryAgain">Try Again</button>
+        <button class="back-btn" onclick="backToMenu()" data-lang="mainMenu">Main Menu</button>
+    </div>
+
+    <div class="pause-menu" id="pauseMenu">
+        <h2>⏸️ <span data-lang="paused">PAUSED</span></h2>
+        <button class="pause-menu-btn" onclick="resumeGame()" data-lang="resume">Resume</button>
+        <button class="pause-menu-btn" onclick="backToMenu()" data-lang="mainMenu">Main Menu</button>
+    </div>
+
+    <!-- Map Container -->
+    <div class="canvas-wrapper" id="mapContainer">
+        <div class="game-header">
+            <div class="progress-info">
+                <span data-lang="level">Level</span>: <span id="currentLevel">1</span>/10 | 
+                <span data-lang="mission">Mission</span>: <span id="currentMission">1</span>/10
+            </div>
+            <div><button class="sound-toggle" onclick="toggleSound()">🔊</button><button class="back-btn" onclick="backToMenu()">←</button></div>
+        </div>
+        <div class="canvas-container"><canvas id="mapCanvas" width="1200" height="600"></canvas><div class="pause-btn" onclick="togglePause()">⏸</div></div>
+    </div>
+
+    <!-- Word Game Container (Replaces Platformer) -->
+    <div class="canvas-wrapper" id="wordGameContainer">
+        <div class="game-header">
+            <div class="progress-info" id="wordGameHeader">
+                <span data-lang="wordGameTitle">Word Puzzle</span> | <span id="wrongGuessesText"></span>
+            </div>
+            <button class="back-btn" onclick="backToMenu()">←</button>
+        </div>
+        <div class="word-game-area">
+            <h3 data-lang="hint">Hint</h3>
+            <p id="wordGameHint">This is a hint for the word.</p>
+            <div class="word-boxes" id="wordBoxes">
+                <!-- <div class="letter-box">A</div>
+                <div class="letter-box"></div> -->
+            </div>
+            <div class="letter-bank" id="letterBank">
+                <!-- <button class="letter-btn">A</button> -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Race Container -->
+    <div class="canvas-wrapper" id="raceContainer">
+        <div class="game-header">
+            <div class="progress-info"><span data-lang="raceProgress">Progress</span>: <span id="raceProgress">0</span>/10</div>
+            <button class="back-btn" onclick="backToMenu()">←</button>
+        </div>
+        <div class="canvas-container"><canvas id="raceCanvas" width="1200" height="600"></canvas><div class="pause-btn" onclick="togglePause()">⏸</div></div>
+    </div>
+
+    <!-- Quiz Panel (for Race) -->
+    <div class="quiz-panel" id="quizPanel">
+        <div class="quiz-question" id="quizQuestion"></div>
+        <div class="quiz-answers" id="quizAnswers"></div>
+    </div>
+
+    <!-- Level Complete Panel -->
+    <div class="level-complete" id="levelComplete">
+        <h2 data-lang="levelComplete">🎉 Level Complete! 🎉</h2>
+        <p data-lang="greatJob">Great job!</p>
+        <button class="continue-btn" onclick="nextLevel()" data-lang="continueNext">Continue</button>
+    </div>
+
+    <!-- Leaderboard Panel -->
+    <div class="leaderboard" id="leaderboard">
+        <h2>🏆 <span data-lang="hallOfHeroes">Hall of Heroes</span> 🏆</h2>
+        <div id="leaderboardEntries"></div>
+        <button class="back-btn" style="margin-top: 30px;" onclick="backToMenu()">← <span data-lang="back">Back</span></button>
+    </div>
+
+    <!-- This script tag must be at the end of <body> -->
+    <script src="script.js"></script>
+</body>
+</html>
