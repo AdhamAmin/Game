@@ -27,11 +27,10 @@
         <!-- Loading Screen --><div class="loading-screen" id="loadingScreen">
             <h1 class="loading-title" data-lang="gameTitle">كلمات</h1>
             <div class="loading-bar-container"><div class="loading-bar" id="loadingBar"></div></div>
-            <p class="loading-text" id="loadingText">Loading... 0%</p>
+            <p class="loading-text" data-lang="loading">Loading... 0%</p>
         </div>
         
         <!-- AI Puzzle Loading Spinner (Hidden by default) -->
-        <!-- MODIFIED: Fixed typo 'classs' to 'class' -->
         <div class="loading-screen" id="aiLoader" style="display: none;">
             <div class="spinner"></div>
             <p class="loading-text" id="aiLoaderText" data-lang="aiLoading">Finding a new puzzle...</p>
@@ -47,30 +46,30 @@
                     <div class="currency-display">
                         <!-- 
                           Points/Diamond Icon
-                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-XLZN4UD8ZXfIiMBZmK2JjIuzb4J8ax.png&w=1000&q=75" alt="Points" class="currency-icon">
+                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-XLZN4UD8ZXfIiMBZmK2JjIuzb4J8ax.png&w=1000&q=75" alt-data-lang="altPoints" alt="Points" class="currency-icon">
                         <span id="mainCurrency">1230</span>
                     </div>
 
-                    <!-- Language Button --><!-- MODIFIED: Now opens a panel --><button class="icon-btn" id="languageBtn" onclick="toggleLanguagePanel()" aria-label="Change Language">
-                        <img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-I41qhHxvqpBLmLsptMSZrbUHwbMr2U.png&w=1000&q=75" alt="Language" class="img-icon">
+                    <!-- Language Button --><button class="icon-btn" id="languageBtn" onclick="toggleLanguagePanel()" aria-label-data-lang="ariaLang" aria-label="Change Language">
+                        <img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-I41qhHxvqpBLmLsptMSZrbUHwbMr2U.png&w=1000&q=75" alt-data-lang="altLang" alt="Language" class="img-icon">
                     </button>
                 </div>
 
                 <!-- Icons exactly as requested --><div class="icon-buttons">
-                    <button class="icon-btn" onclick="showLeaderboard()" aria-label="Leaderboard">
+                    <button class="icon-btn" onclick="showLeaderboard()" aria-label-data-lang="ariaLeaderboard" aria-label="Leaderboard">
                         <!-- 
                           Leaderboard Icon
-                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-d2E4v7g51TmwSQg2ReSaW4fkv80sBI.png&w=1000&q=75" alt="Leaderboard" class="img-icon">
+                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-d2E4v7g51TmwSQg2ReSaW4fkv80sBI.png&w=1000&q=75" alt-data-lang="altLeaderboard" alt="Leaderboard" class="img-icon">
                     </button>
-                    <button class="icon-btn" onclick="showFriends()" aria-label="Friends">
+                    <button class="icon-btn" onclick="showFriends()" aria-label-data-lang="ariaFriends" aria-label="Friends">
                         <!-- 
                           Friends Icon
-                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-P05fu8WEQj8szOXCHhA0gkgXa66GIU.png&w=1000&q=75" alt="Friends" class="img-icon">
+                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-P05fu8WEQj8szOXCHhA0gkgXa66GIU.png&w=1000&q=75" alt-data-lang="altFriends" alt="Friends" class="img-icon">
                     </button>
-                    <button class="icon-btn" onclick="toggleSettings()" aria-label="Settings">
+                    <button class="icon-btn" onclick="toggleSettings()" aria-label-data-lang="ariaSettings" aria-label="Settings">
                         <!-- 
                           Settings Icon
-                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-5WOZbM8gOwMf0RATXQa7UL57OKFSMg.png&w=1000&q=75" alt="Settings" class="img-icon">
+                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-5WOZbM8gOwMf0RATXQa7UL57OKFSMg.png&w=1000&q=75" alt-data-lang="altSettings" alt="Settings" class="img-icon">
                     </button>
                 </div>
             </div>
@@ -105,15 +104,15 @@
                 <div class="currency-display">
                     <!-- 
                       Points/Diamond Icon
-                    --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-XLZN4UD8ZXfIiMBZmK2JjIuzb4J8ax.png&w=1000&q=75" alt="Points" class="currency-icon">
+                    --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-XLZN4UD8ZXfIiMBZmK2JjIuzb4J8ax.png&w=1000&q=75" alt-data-lang="altPoints" alt="Points" class="currency-icon">
                     <span id="gameCurrency">1230</span>
                 </div>
                 <!-- Level Title --><h2 class="game-level-title" id="gameLevelTitle">
                     <span data-lang="level">المستوى</span> 1
                 </h2>
                 <!-- Home Button --><div class="icon-buttons">
-                    <button class="icon-btn" onclick="backToMenu()" aria-label="Home">
-                        <img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-6F0Oea8suMLdEi6BoluXYbqXxnWEdt.png&w=320&q=75" alt="Home" class="img-icon">
+                    <button class="icon-btn" onclick="backToMenu()" aria-label-data-lang="ariaHome" aria-label="Home">
+                        <img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-6F0Oea8suMLdEi6BoluXYbqXxnWEdt.png&w=320&q=75" alt-data-lang="altHome" alt="Home" class="img-icon">
                     </button>
                 </div>
             </div>
@@ -133,12 +132,12 @@
                     <button class="power-up-btn" id="powerHintBtn" onclick="usePowerHint()">
                         <!-- 
                           Flame Hint Icon
-                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-VgWX4UmDW5pY171o65GSc2VFAIfUMl.png&w=1000&q=75" alt="Flame Hint" class="power-up-icon">
+                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-VgWX4UmDW5pY171o65GSc2VFAIfUMl.png&w=1000&q=75" alt-data-lang="altFlameHint" alt="Flame Hint" class="power-up-icon">
                         <span>150</span>
                     </button>
                     <a href="#" class="report-link" data-lang="reportProblem">الإبلاغ عن مشكلة</a>
                     <button class="power-up-btn" id="hintBtn" onclick="useHint()">
-                        <i data-feather="help-circle"></i> <!-- "Wand" icon --><span>50</span>
+                        <i data-feather="help-circle" alt-data-lang="altWandHint" alt="Wand Hint"></i> <!-- "Wand" icon --><span>50</span>
                     </button>
                 </div>
             </div>
@@ -153,7 +152,7 @@
             <div class="panel-content">
                 <div class="setting-item">
                     <label class="setting-label" data-lang="playerName">Player Name</label>
-                    <input type="text" class="name-input" id="playerNameInput" placeholder="Enter your name" maxlength="20">
+                    <input type="text" class="name-input" id="playerNameInput" data-lang-placeholder="placeholderPlayerName" placeholder="Enter your name" maxlength="20">
                 </div>
                 <div class="setting-item">
                     <label class="setting-label" data-lang="musicVolume">Music Volume</label>
@@ -180,14 +179,14 @@
                     <label class="setting-label" data-lang="yourCode">Your Player Code</label>
                     <!-- MODIFIED: Added container and copy button --><div class="player-code-container">
                         <span class="player-code" id="playerCode">LOADING...</span>
-                        <button class="copy-btn" onclick="copyPlayerCode()" aria-label="Copy Code">
+                        <button class="copy-btn" onclick="copyPlayerCode()" aria-label-data-lang="ariaCopy" aria-label="Copy Code">
                             <i data-feather="copy"></i>
                         </button>
                     </div>
                 </div>
                 <div class="setting-item">
                     <label class="setting-label" data-lang="addFriend">Add Friend by Code</label>
-                    <input type="text" class="code-input" id="friendCodeInput" placeholder="Enter friend code" maxlength="8">
+                    <input type="text" class="code-input" id="friendCodeInput" data-lang-placeholder="placeholderFriendCode" placeholder="Enter friend code" maxlength="8">
                     <button class="panel-btn" onclick="addFriend()" data-lang="add">Add Friend</button>
                 </div>
                 <div class="friends-list" id="friendsList"></div>
