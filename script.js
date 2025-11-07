@@ -200,28 +200,28 @@ const translations = {
 };
 
 // --- Backgrounds ---
-// MODIFIED: Reduced list to 20 backgrounds
+// MODIFIED: Added clear placeholders for icon URLs
 const backgrounds = [
     { name: 'Mountains 1', color: 'url(https://images.unsplash.com/photo-1519681393784-d120267933ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDV8fG1vdW50YWlufGVufDB8fHx8MTcyNDA3NzE3NHww&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-GzsgKqOaaNDdBSvCoA558OqVSMUdHF.png&w=1000&q=75' },
-    { name: 'Flowers 2', color: 'url(https://images.unsplash.com/photo-1490750967868-88aa4486c946?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDF8fGZsb3dlcnN8ZW58MHx8fHwxNzI0MDc3MjMwfDA&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'image' },
-    { name: 'Sky 3', color: 'url(https://images.unsplash.com/photo-1534088568595-a066f4e5-919b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDEwfHxza3l8ZW58MHx8fHwxNzI0MDc3MjQ5fDA&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'image' },
-    { name: 'Forest 4', color: 'url(https://images.unsplash.com/photo-1448375240586-8827074e888e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDR8fGZvcmVzdHxlbnwwfHx8fDE3MjQwNzcyNjR8MA&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'image' },
-    { name: 'Sunset 5', color: 'linear-gradient(to right, #ff7e5f, #feb47b)', iconUrl: 'image' },
-    { name: 'Night 6', color: 'linear-gradient(to right, #2c3e50, #4a69bd)', iconUrl: 'image' },
-    { name: 'Beach 7', color: 'linear-gradient(to right, #00c9ff, #92fe9d)', iconUrl: 'image' },
-    { name: 'Pastel 8', color: 'linear-gradient(to right, #ff9a9e, #fecfef)', iconUrl: 'image' },
-    { name: 'Ruby 9', color: 'linear-gradient(to right, #d31027, #ea384d)', iconUrl: 'image' },
-    { name: 'Ocean 10', color: 'linear-gradient(to right, #0575e6, #021b79)', iconUrl: 'image' },
-    { name: 'Mint 11', color: 'linear-gradient(to right, #11998e, #38ef7d)', iconUrl: 'image' },
-    { name: 'Sakura 12', color: 'linear-gradient(to right, #ffc0cb, #f0f0f0)', iconUrl: 'image' },
-    { name: 'Azure 13', color: 'linear-gradient(to right, #007bff, #c2e9fb)', iconUrl: 'image' },
-    { name: 'Lava 14', color: 'linear-gradient(to right, #ff416c, #ff4b2b)', iconUrl: 'image' },
-    { name: 'Emerald 15', color: 'linear-gradient(to right, #009688, #4db6ac)', iconUrl: 'image' },
-    { name: 'Amethyst 16', color: 'linear-gradient(to right, #9d50bb, #6e48aa)', iconUrl: 'image' },
-    { name: 'Rose 17', color: 'linear-gradient(to right, #f8cdda, #1d2b64)', iconUrl: 'image' },
-    { name: 'Gold 18', color: 'linear-gradient(to right, #f12711, #f5af19)', iconUrl: 'image' },
-    { name: 'Steel 19', color: 'linear-gradient(to right, #757f9a, #d7dde8)', iconUrl: 'image' },
-    { name: 'Sand 20', color: 'linear-gradient(to right, #c2b280, #f0e68c)', iconUrl: 'image' },
+    { name: 'Flowers 2', color: 'url(https://images.unsplash.com/photo-1490750967868-88aa4486c946?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDF8fGZsb3dlcnN8ZW58MHx8fHwxNzI0MDc3MjMwfDA&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'PASTE_FLOWERS_ICON_LINK_HERE' },
+    { name: 'Sky 3', color: 'url(https://images.unsplash.com/photo-1534088568595-a066f4e5-919b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDEwfHxza3l8ZW58MHx8fHwxNzI0MDc3MjQ5fDA&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'PASTE_SKY_ICON_LINK_HERE' },
+    { name: 'Forest 4', color: 'url(https://images.unsplash.com/photo-1448375240586-8827074e888e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDR8fGZvcmVzdHxlbnwwfHx8fDE3MjQwNzcyNjR8MA&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'PASTE_FOREST_ICON_LINK_HERE' },
+    { name: 'Sunset 5', color: 'linear-gradient(to right, #ff7e5f, #feb47b)', iconUrl: 'PASTE_SUNSET_ICON_LINK_HERE' },
+    { name: 'Night 6', color: 'linear-gradient(to right, #2c3e50, #4a69bd)', iconUrl: 'PASTE_NIGHT_ICON_LINK_HERE' },
+    { name: 'Beach 7', color: 'linear-gradient(to right, #00c9ff, #92fe9d)', iconUrl: 'PASTE_BEACH_ICON_LINK_HERE' },
+    { name: 'Pastel 8', color: 'linear-gradient(to right, #ff9a9e, #fecfef)', iconUrl: 'PASTE_PASTEL_ICON_LINK_HERE' },
+    { name: 'Ruby 9', color: 'linear-gradient(to right, #d31027, #ea384d)', iconUrl: 'PASTE_RUBY_ICON_LINK_HERE' },
+    { name: 'Ocean 10', color: 'linear-gradient(to right, #0575e6, #021b79)', iconUrl: 'PASTE_OCEAN_ICON_LINK_HERE' },
+    { name: 'Mint 11', color: 'linear-gradient(to right, #11998e, #38ef7d)', iconUrl: 'PASTE_MINT_ICON_LINK_HERE' },
+    { name: 'Sakura 12', color: 'linear-gradient(to right, #ffc0cb, #f0f0f0)', iconUrl: 'PASTE_SAKURA_ICON_LINK_HERE' },
+    { name: 'Azure 13', color: 'linear-gradient(to right, #007bff, #c2e9fb)', iconUrl: 'PASTE_AZURE_ICON_LINK_HERE' },
+    { name: 'Lava 14', color: 'linear-gradient(to right, #ff416c, #ff4b2b)', iconUrl: 'PASTE_LAVA_ICON_LINK_HERE' },
+    { name: 'Emerald 15', color: 'linear-gradient(to right, #009688, #4db6ac)', iconUrl: 'PASTE_EMERALD_ICON_LINK_HERE' },
+    { name: 'Amethyst 16', color: 'linear-gradient(to right, #9d50bb, #6e48aa)', iconUrl: 'PASTE_AMETHYST_ICON_LINK_HERE' },
+    { name: 'Rose 17', color: 'linear-gradient(to right, #f8cdda, #1d2b64)', iconUrl: 'PASTE_ROSE_ICON_LINK_HERE' },
+    { name: 'Gold 18', color: 'linear-gradient(to right, #f12711, #f5af19)', iconUrl: 'PASTE_GOLD_ICON_LINK_HERE' },
+    { name: 'Steel 19', color: 'linear-gradient(to right, #757f9a, #d7dde8)', iconUrl: 'PASTE_STEEL_ICON_LINK_HERE' },
+    { name: 'Sand 20', color: 'linear-gradient(to right, #c2b280, #f0e68c)', iconUrl: 'PASTE_SAND_ICON_LINK_HERE' },
 ];
 
 // --- Core Functions ---
@@ -437,11 +437,9 @@ function initSettings() {
         if (bg.iconUrl && bg.iconUrl.startsWith('http')) {
             // It's a full URL, use <img>
             option.innerHTML = `<img src="${bg.iconUrl}" alt="${bg.name}" class="bg-icon-img">`;
-        } else if (bg.iconUrl) {
-            // It's a Feather icon name
-            option.innerHTML = `<i data-feather="${bg.iconUrl}"></i>`;
         } else {
-            // Fallback to color
+            // It's a placeholder (or 'image'), so just show the color
+            // We use the 'color' property which can be a gradient or a URL
             option.style.background = bg.color;
         }
 
