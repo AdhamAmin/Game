@@ -47,14 +47,11 @@ body {
 #appContainer {
     width: 100%;
     height: 100%;
-    /* max-width: 500px; <-- Removed for fullscreen */
-    /* margin: 0 auto; <-- Removed for fullscreen */
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
     position: relative;
     overflow: hidden;
-    /* box-shadow: 0 0 30px rgba(0,0,0,0.5); <-- Removed for fullscreen */
     transition: background-image 0.5s ease-in-out;
 }
 
@@ -95,8 +92,8 @@ body {
 }
 .loading-bar-container {
     width: 80%;
-    max-width: 400px; /* Added max-width for large screens */
-    height: 20px;
+    max-width: 400px;
+    height: clamp(16px, 3vw, 20px);
     background: rgba(255,255,255,0.3);
     border-radius: 10px;
     overflow: hidden;
@@ -115,8 +112,8 @@ body {
 
 /* AI Spinner */
 .spinner {
-    width: 50px;
-    height: 50px;
+    width: clamp(40px, 10vw, 50px);
+    height: clamp(40px, 10vw, 50px);
     border: 5px solid rgba(255,255,255,0.3);
     border-top-color: var(--color-light);
     border-radius: 50%;
@@ -131,14 +128,13 @@ body {
 /* --- Top Bar (Shared) --- */
 .top-bar {
     width: 100%;
-    max-width: 1200px; /* Constrain top bar width on large screens */
-    margin: 0 auto; /* Center top bar on large screens */
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
 }
-/* New container for left items */
 .top-bar-left {
     display: flex;
     align-items: center;
@@ -156,11 +152,6 @@ body {
     color: var(--color-light);
     gap: clamp(6px, 1.5vw, 8px);
 }
-.currency-display i {
-    width: clamp(18px, 4vw, 20px);
-    height: clamp(18px, 4vw, 20px);
-    stroke-width: 3px;
-}
 .currency-display .currency-icon {
     width: clamp(18px, 4vw, 20px);
     height: clamp(18px, 4vw, 20px);
@@ -171,11 +162,12 @@ body {
     gap: clamp(8px, 2vw, 12px);
 }
 .icon-btn {
-    width: clamp(40px, 10vw, 48px);
-    height: clamp(40px, 10vw, 48px);
+    /* MODIFIED: Larger and frameless */
+    width: clamp(44px, 12vw, 52px);
+    height: clamp(44px, 12vw, 52px);
     border-radius: 50%;
-    background: var(--color-glass);
-    backdrop-filter: blur(10px);
+    background: transparent;
+    backdrop-filter: none;
     border: none;
     color: var(--color-light);
     display: flex;
@@ -185,18 +177,28 @@ body {
     transition: all 0.2s;
 }
 .icon-btn i {
-    width: 50%;
-    height: 50%;
+    /* MODIFIED: Larger */
+    width: 70%;
+    height: 70%;
     stroke-width: 3px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
 }
 .icon-btn .img-icon {
-    width: 50%;
-    height: 50%;
+    /* MODIFIED: Larger */
+    width: 70%;
+    height: 70%;
     object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
 }
 .icon-btn:active {
     transform: scale(0.9);
 }
+/* Specific style for language button to add glass bg back */
+#languageBtn {
+    background: var(--color-glass);
+    backdrop-filter: blur(10px);
+}
+
 
 /* --- Main Menu Screen --- */
 #mainMenu {
@@ -208,7 +210,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
-    margin: auto 0; /* Center content vertically */
+    margin: auto 0;
 }
 .game-title {
     font-family: var(--font-title);
@@ -237,7 +239,7 @@ body {
 }
 .progress-bar-outer {
     width: 100%;
-    height: 12px;
+    height: clamp(10px, 2vw, 12px);
     background: rgba(0,0,0,0.2);
     border-radius: 6px;
     overflow: hidden;
@@ -275,12 +277,6 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2), 0 2px 0 var(--color-primary-dark) inset;
 }
 
-/* Language Selector (Moved to top bar) */
-.language-selector-container {
-   display: none; /* Old one is hidden */
-}
-
-
 /* --- Game (Puzzle) Screen --- */
 .game-level-title {
     font-family: var(--font-title);
@@ -294,15 +290,15 @@ body {
     flex-direction: column;
     justify-content: space-around;
     width: 100%;
-    max-width: 800px; /* Constrain puzzle content on wide screens */
-    margin: 0 auto; /* Center puzzle content */
+    max-width: 800px;
+    margin: 0 auto;
 }
 .hint-box {
     width: 100%;
-    max-width: 600px; /* Constrain hint box width */
-    margin: 0 auto; /* Center hint box */
-    min-height: 40px; /* MODIFIED: Was 50px */
-    padding: clamp(10px, 2.5vw, 14px); /* MODIFIED: Was 12px/3vw/16px */
+    max-width: 600px;
+    margin: 0 auto;
+    min-height: 40px;
+    padding: clamp(10px, 2.5vw, 14px);
     background: var(--color-light);
     border-radius: var(--border-radius);
     display: flex;
@@ -320,7 +316,7 @@ body {
     align-items: center;
     flex-wrap: wrap;
     gap: clamp(8px, 2vw, 10px);
-    min-height: 50px; /* MODIFIED: Was 60px */
+    min-height: 50px;
     margin: 1rem 0;
 }
 .answer-box {
@@ -357,11 +353,11 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: clamp(10px, 2.5vw, 15px);
     width: 100%;
-    max-width: 450px; /* MODIFIED: Was 500px */
+    max-width: 450px;
     margin: 0 auto;
 }
 .letter-tile {
-    aspect-ratio: 1 / 1; /* Make tiles square */
+    aspect-ratio: 1 / 1;
     width: 100%;
     background: var(--color-primary);
     border: none;
@@ -389,8 +385,8 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 600px; /* Constrain footer width */
-    margin: 0 auto; /* Center footer */
+    max-width: 600px;
+    margin: 0 auto;
 }
 .power-up-btn {
     display: flex;
@@ -444,8 +440,17 @@ body {
     z-index: 50;
     overflow-y: auto;
     padding: var(--padding-screen);
-    padding-top: calc(var(--padding-screen) + 1.5rem); /* Extra space for title */
+    padding-top: calc(var(--padding-screen) + 1.5rem);
     box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+    
+    @media (min-width: 768px) {
+        bottom: 50%;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        max-width: 500px;
+        max-height: 70vh;
+        border-radius: var(--border-radius);
+    }
 }
 .panel h2 {
     font-family: var(--font-title);
@@ -461,8 +466,8 @@ body {
     position: absolute;
     top: var(--padding-screen);
     right: var(--padding-screen);
-    width: 30px;
-    height: 30px;
+    width: clamp(30px, 8vw, 36px);
+    height: clamp(30px, 8vw, 36px);
     background: #f0f0f0;
     border-radius: 50%;
     border: none;
@@ -491,7 +496,7 @@ body {
 }
 .name-input, .code-input {
     width: 100%;
-    padding: 12px;
+    padding: clamp(10px, 3vw, 14px);
     font-size: clamp(1rem, 4vw, 1.1rem);
     border: 2px solid #E0E0E0;
     border-radius: 10px;
@@ -500,23 +505,22 @@ body {
 .volume-slider {
     width: 100%;
     -webkit-appearance: none;
-    appearance: none; /* standard property for cross-browser */
-    height: 8px;
+    height: clamp(6px, 1.5vw, 10px);
     background: #E0E0E0;
     border-radius: 4px;
     outline: none;
 }
 .volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 24px;
-    height: 24px;
+    width: clamp(20px, 5vw, 26px);
+    height: clamp(20px, 5vw, 26px);
     border-radius: 50%;
     background: var(--color-primary);
     cursor: pointer;
 }
 .volume-slider::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
+    width: clamp(20px, 5vw, 26px);
+    height: clamp(20px, 5vw, 26px);
     border-radius: 50%;
     background: var(--color-primary);
     cursor: pointer;
@@ -548,17 +552,16 @@ body {
     border-color: var(--color-primary);
     transform: scale(1.05);
 }
-/* NEW: Styles for background icons */
 .bg-option .bg-icon-img {
     width: 70%;
     height: 70%;
     object-fit: contain;
-    border-radius: 5px; /* Optional */
+    border-radius: 5px;
 }
 .bg-option i {
     width: 60%;
     height: 60%;
-    color: #333; /* Default icon color */
+    color: #333;
     stroke-width: 2px;
 }
 
@@ -570,7 +573,7 @@ body {
     width: 100%;
     background: #f0f0f0;
     border-radius: 10px;
-    padding: 8px 12px;
+    padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px);
 }
 .player-code {
     flex-grow: 1;
@@ -579,8 +582,8 @@ body {
     color: var(--color-dark);
 }
 .copy-btn {
-    width: 36px;
-    height: 36px;
+    width: clamp(32px, 8vw, 38px);
+    height: clamp(32px, 8vw, 38px);
     flex-shrink: 0;
     border: none;
     background: #e0e0e0;
@@ -597,7 +600,7 @@ body {
 }
 .panel-btn {
     width: 100%;
-    padding: 14px;
+    padding: clamp(12px, 3.5vw, 16px);
     background: var(--color-primary);
     border: none;
     border-radius: 10px;
@@ -612,7 +615,7 @@ body {
 }
 .panel-btn-secondary {
     width: 100%;
-    padding: 14px;
+    padding: clamp(12px, 3.5vw, 16px);
     background: #f0f0f0;
     border: none;
     border-radius: 10px;
@@ -638,8 +641,8 @@ body {
     font-weight: 700;
 }
 .remove-friend-btn {
-    width: 24px;
-    height: 24px;
+    width: clamp(22px, 6vw, 26px);
+    height: clamp(22px, 6vw, 26px);
     border: none;
     background: #e0e0e0;
     color: var(--color-text);
@@ -656,17 +659,6 @@ body {
 }
 
 /* --- Responsive Layout Adjustments --- */
-@media (min-width: 768px) {
-    .panel {
-        bottom: 50%;
-        left: 50%;
-        transform: translate(-50%, 50%);
-        max-width: 500px;
-        max-height: 70vh;
-        border-radius: var(--border-radius);
-    }
-}
-
 @media (min-height: 700px) {
     .puzzle-content {
         justify-content: space-evenly;
