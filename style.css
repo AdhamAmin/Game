@@ -326,8 +326,8 @@ body {
     width: 100%;
     max-width: 600px; /* Constrain hint box width */
     margin: 0 auto; /* Center hint box */
-    min-height: 50px;
-    padding: clamp(12px, 3vw, 16px);
+    min-height: 40px; /* MODIFIED: Was 50px */
+    padding: clamp(10px, 2.5vw, 14px); /* MODIFIED: Was 12px/3vw/16px */
     background: var(--color-light);
     border-radius: var(--border-radius);
     display: flex;
@@ -345,7 +345,7 @@ body {
     align-items: center;
     flex-wrap: wrap;
     gap: clamp(8px, 2vw, 10px);
-    min-height: 60px; /* Placeholder height */
+    min-height: 50px; /* MODIFIED: Was 60px */
     margin: 1rem 0;
 }
 .answer-box {
@@ -382,7 +382,7 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: clamp(10px, 2.5vw, 15px);
     width: 100%;
-    max-width: 500px; /* Constrain grid width */
+    max-width: 450px; /* MODIFIED: Was 500px */
     margin: 0 auto;
 }
 .letter-tile {
