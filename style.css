@@ -442,16 +442,8 @@ body {
     padding: var(--padding-screen);
     padding-top: calc(var(--padding-screen) + 1.5rem);
     box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-    
-    @media (min-width: 768px) {
-        bottom: 50%;
-        left: 50%;
-        transform: translate(-50%, 50%);
-        max-width: 500px;
-        max-height: 70vh;
-        border-radius: var(--border-radius);
-    }
 }
+
 .panel h2 {
     font-family: var(--font-title);
     font-size: clamp(1.5rem, 6vw, 2rem);
@@ -505,6 +497,7 @@ body {
 .volume-slider {
     width: 100%;
     -webkit-appearance: none;
+    appearance: none;
     height: clamp(6px, 1.5vw, 10px);
     background: #E0E0E0;
     border-radius: 4px;
@@ -659,6 +652,16 @@ body {
 }
 
 /* --- Responsive Layout Adjustments --- */
+@media (min-width: 768px) {
+    .panel {
+        bottom: 50%;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        max-width: 500px;
+        max-height: 70vh;
+        border-radius: var(--border-radius);
+    }
+}
 @media (min-height: 700px) {
     .puzzle-content {
         justify-content: space-evenly;
