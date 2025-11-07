@@ -1,12 +1,14 @@
 /* ---
   Main Script for Words Game
-  Based on the provided image and video
+  MODIFIED: AI RE-INTEGRATED.
+  MODIFIED: API KEY from user has been added.
 --- */
 
-// --- Config Placeholder ---
+// --- Config ---
 const config = {
-    // NOTE: Replace "YOUR_GEMINI_API_KEY" with your actual key
-    API_KEY: "AIzaSyA07fIjzntygTqDKG1ZWkyQAsfILiwFMD0",
+    // NOTE: API Key provided by user
+    API_KEY: "AIzaSyDNuPTBnnjHgmVFVelonh8xboaHD_E8CoQ",
+    API_URL: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key="
 };
 
 // --- Game State Variables ---
@@ -25,40 +27,31 @@ let playerCode = '';
 let friends = [];
 let sounds = {};
 
-// --- Player Stats for AI ---
+// --- Player Stats ---
 let playerStats = {
     level: 1,
-    progress: 0, // Default progress is 0 words
+    progress: 0, // 0-9 (10 words per level)
     currency: 1230,
-    correctInRow: 0,
-    hintUsed: 0,
-    powerHintUsed: 0,
-    topics: {
-        general: { correct: 0, total: 0 },
-        geography: { correct: 0, total: 0 },
-        science: { correct: 0, total: 0 },
-        history: { correct: 0, total: 0 },
-    }
+    history: [] // To track previous puzzles
 };
 
 // --- Current Puzzle State ---
 let currentPuzzle = {
-    word: "", // e.g., "LONDON"
-    hint: "", // e.g., "Capital of the UK"
-    letters: [], // e.g., ['L', 'O', 'N', 'D', 'O', 'N', 'A', 'B', 'C', 'X', 'Y', 'Z']
-    answer: [], // e.g., [null, null, null, null, null, null]
-    filledIndexes: [], // Tracks which answer-box index is filled
-    firstEmptyBox: 0, // The first index of answer-boxes that is null
+    word: "", 
+    hint: "", 
+    letters: [],
+    answer: [],
+    filledIndexes: [],
+    firstEmptyBox: 0, 
 };
 
 // --- Translations ---
-// MODIFIED: Added all new keys for full translation
 const translations = {
     en: {
         title: "Dr.WEEE's World",
         gameTitle: "WORDS",
         loading: "Loading...",
-        aiLoading: "Finding a new puzzle...",
+        aiLoading: "Loading new puzzle...",
         beginner: "Beginner",
         expert: "Expert",
         continueLevel: "Level",
@@ -77,19 +70,13 @@ const translations = {
         levelComplete: "Level Complete!",
         greatJob: "Great job!",
         continueNext: "Continue",
-        aiError: "Could not load puzzle. Check connection or API Key.",
-        aiErrorTitle: "Error",
+        errorTitle: "Error",
+        apiError: "Could not load puzzle. Please check your connection or API Key.",
+        apiErrorKey: "API KEY is missing. Please add it to script.js on line 7.",
         tryAgain: "Try Again",
         mainMenu: "Main Menu",
         copy: "Copy",
         copied: "Copied!",
-        word: "Word",
-        hint: "Hint",
-        category: "Category",
-        letters: "Letters",
-        puzzleError: "Could not get a puzzle from the AI. Retrying...",
-        puzzleParseError: "Failed to parse AI response. Retrying...",
-        apiKeyError: "API Key is missing. Please add it to script.js.",
         chooseLanguage: "Choose Language",
         leaderboardLoading: "Loading scores...",
         // Alt/Aria Translations
@@ -115,7 +102,7 @@ const translations = {
         title: "Dr.WEEE's World",
         gameTitle: "كلمات",
         loading: "تحميل...",
-        aiLoading: "البحث عن لغز جديد...",
+        aiLoading: "جاري تحميل لغز جديد...",
         beginner: "مبتدئ",
         expert: "متعلم",
         continueLevel: "المستوى",
@@ -134,19 +121,13 @@ const translations = {
         levelComplete: "اكتمل المستوى!",
         greatJob: "عمل رائع!",
         continueNext: "متابعة",
-        aiError: "لم نتمكن من تحميل اللغز. تحقق من الاتصال أو مفتاح API.",
-        aiErrorTitle: "خطأ",
+        errorTitle: "خطأ",
+        apiError: "لا يمكن تحميل اللغز. يرجى التحقق من اتصالك أو مفتاح API.",
+        apiErrorKey: "مفتاح API مفقود. يرجى إضافته إلى script.js في السطر 7.",
         tryAgain: "حاول مرة أخرى",
         mainMenu: "القائمة الرئيسية",
         copy: "نسخ",
         copied: "تم النسخ!",
-        word: "كلمة",
-        hint: "تلميح",
-        category: "فئة",
-        letters: "حروف",
-        puzzleError: "لم نتمكن من الحصول على لغز. جار المحاولة...",
-        puzzleParseError: "فشل في تحليل استجابة الذكاء الاصطناعي. جار المحاولة...",
-        apiKeyError: " مفتاح API مفقود. يرجى إضافته إلى script.js.",
         chooseLanguage: "اختر اللغة",
         leaderboardLoading: "جاري تحميل النقاط...",
         // Alt/Aria Translations
@@ -172,7 +153,7 @@ const translations = {
         title: "Il Mondo del Dr.WEEE",
         gameTitle: "PAROLE",
         loading: "Caricamento...",
-        aiLoading: "Ricerca di un nuovo puzzle...",
+        aiLoading: "Caricamento nuovo puzzle...",
         beginner: "Principiante",
         expert: "Esperto",
         continueLevel: "Livello",
@@ -191,19 +172,13 @@ const translations = {
         levelComplete: "Livello Completato!",
         greatJob: "Ottimo lavoro!",
         continueNext: "Continua",
-        aiError: "Impossibile caricare il puzzle. Controlla la connessione o la chiave API.",
-        aiErrorTitle: "Errore",
+        errorTitle: "Errore",
+        apiError: "Impossibile caricare il puzzle. Controlla la tua connessione o la chiave API.",
+        apiErrorKey: "Chiave API mancante. Aggiungila a script.js alla linea 7.",
         tryAgain: "Riprova",
         mainMenu: "Menu Principale",
         copy: "Copia",
         copied: "Copiato!",
-        word: "Parola",
-        hint: "Indizio",
-        category: "Categoria",
-        letters: "Lettere",
-        puzzleError: "Impossibile ottenere un puzzle dall'AI. Riprovo...",
-        puzzleParseError: "Impossibile analizzare la risposta dell'AI. Riprovo...",
-        apiKeyError: "Chiave API mancante. Aggiungila a script.js.",
         chooseLanguage: "Scegli la lingua",
         leaderboardLoading: "Caricamento punteggi...",
         // Alt/Aria Translations
@@ -229,7 +204,7 @@ const translations = {
         title: "El Mundo del Dr.WEEE",
         gameTitle: "PALABRAS",
         loading: "Cargando...",
-        aiLoading: "Buscando un nuevo rompecabezas...",
+        aiLoading: "Cargando nuevo rompecabezas...",
         beginner: "Principiante",
         expert: "Experto",
         continueLevel: "Nivel",
@@ -248,19 +223,13 @@ const translations = {
         levelComplete: "¡Nivel Completado!",
         greatJob: "¡Buen trabajo!",
         continueNext: "Continuar",
-        aiError: "No se pudo cargar el rompecabezas. Revisa la conexión o la clave API.",
-        aiErrorTitle: "Error",
+        errorTitle: "Error",
+        apiError: "No se pudo cargar el rompecabezas. Revisa tu conexión o la clave API.",
+        apiErrorKey: "Falta la clave API. Agrégala a script.js en la línea 7.",
         tryAgain: "Intentar de Nuevo",
         mainMenu: "Menú Principal",
         copy: "Copiar",
         copied: "¡Copiado!",
-        word: "Palabra",
-        hint: "Pista",
-        category: "Categoría",
-        letters: "Letras",
-        puzzleError: "No se pudo obtener un rompecabezas de la IA. Reintentando...",
-        puzzleParseError: "Error al analizar la respuesta de la IA. Reintentando...",
-        apiKeyError: "Falta la clave API. Agrégala a script.js.",
         chooseLanguage: "Elige lengua",
         leaderboardLoading: "Cargando puntuaciones...",
         // Alt/Aria Translations
@@ -283,6 +252,7 @@ const translations = {
         placeholderFriendCode: "Escribe código de amigo",
     }
 };
+
 
 // --- Backgrounds ---
 const backgrounds = [
@@ -318,7 +288,7 @@ function generatePlayerCode() {
 }
 
 /**
- * MODIFIED: Opens the language choice panel.
+ * Opens the language choice panel.
  */
 function toggleLanguagePanel() {
     const panel = document.getElementById('languagePanel');
@@ -331,7 +301,7 @@ function toggleLanguagePanel() {
 }
 
 /**
- * NEW: Sets the language from the panel.
+ * Sets the language from the panel.
  */
 function selectLanguage(lang) {
     currentLanguage = lang;
@@ -341,6 +311,7 @@ function selectLanguage(lang) {
     updateLanguage();
     toggleLanguagePanel(); // Close the panel
 }
+
 
 /**
  * Updates all text and directionality based on currentLanguage.
@@ -360,7 +331,7 @@ function updateLanguage() {
         }
     });
 
-    // MODIFIED: Translate all `data-lang-placeholder` elements
+    // Translate all `data-lang-placeholder` elements
     document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
         const key = el.getAttribute('data-lang-placeholder');
         if (translations[currentLanguage] && translations[currentLanguage][key]) {
@@ -370,7 +341,7 @@ function updateLanguage() {
         }
     });
 
-    // MODIFIED: Translate all `alt-data-lang` elements
+    // Translate all `alt-data-lang` elements
     document.querySelectorAll('[alt-data-lang]').forEach(el => {
         const key = el.getAttribute('alt-data-lang');
         if (translations[currentLanguage] && translations[currentLanguage][key]) {
@@ -380,7 +351,7 @@ function updateLanguage() {
         }
     });
 
-    // MODIFIED: Translate all `aria-label-data-lang` elements
+    // Translate all `aria-label-data-lang` elements
     document.querySelectorAll('[aria-label-data-lang]').forEach(el => {
         const key = el.getAttribute('aria-label-data-lang');
         if (translations[currentLanguage] && translations[currentLanguage][key]) {
@@ -389,6 +360,9 @@ function updateLanguage() {
             el.setAttribute('aria-label', translations.en[key]); // Fallback to English
         }
     });
+    
+    // Update level button number after translation
+    updateUIStats();
 }
 
 /**
@@ -542,7 +516,8 @@ function initSettings() {
         if (bg.iconUrl && bg.iconUrl.startsWith('http')) {
             option.innerHTML = `<img src="${bg.iconUrl}" alt="${bg.name}" class="bg-icon-img">`;
         } else {
-            option.style.background = bg.color;
+            // Placeholder icon
+            option.innerHTML = `<i data-feather="image"></i>`; 
         }
 
         option.onclick = () => setBackground(bg.color, option);
@@ -593,11 +568,8 @@ function updateUIStats() {
     document.getElementById('levelProgress').style.width = `${progressPercent}%`;
     document.getElementById('progressValue').textContent = `${playerStats.progress}/10`; 
     
-    const levelText = `${translations[currentLanguage]?.continueLevel || 'Level'} ${playerStats.level}`;
-    document.getElementById('continueBtn').textContent = levelText;
-    
-    const gameLevelText = `${translations[currentLanguage]?.level || 'Level'} ${playerStats.level}`;
-    document.getElementById('gameLevelTitle').textContent = gameLevelText;
+    document.getElementById('continueBtnNumber').textContent = playerStats.level;
+    document.getElementById('gameLevelTitleNumber').textContent = playerStats.level;
 }
 
 // --- Audio ---
@@ -662,123 +634,133 @@ function startGame() {
     console.log("Starting game...");
     sounds.click();
     
-    // MODIFIED: Check for API Key
-    if (config.API_KEY === "YOUR_GEMINI_API_KEY") {
-        console.error("API Key is missing!");
-        alert(translations[currentLanguage].apiKeyError); // Alert the user
-        return; // Stop the game from starting
+    // Check for API Key
+    if (!config.API_KEY || config.API_KEY === "YOUR_GEMINI_API_KEY") {
+        showGameOver(translations[currentLanguage].apiErrorKey);
+        return;
     }
     
-    // Show AI loading spinner
-    document.getElementById('aiLoader').style.display = 'flex';
+    // Hide main menu, show game
     document.getElementById('mainMenu').style.display = 'none';
-
+    document.getElementById('aiLoader').style.display = 'flex';
+    
+    // Load puzzle from AI
     loadPuzzleFromAI();
 }
 
 /**
- * Fetches a new puzzle from the Gemini API.
+ * Generates the prompt for the AI.
  */
-async function loadPuzzleFromAI() {
-    const aiLoaderText = document.getElementById('aiLoaderText');
-    aiLoaderText.textContent = translations[currentLanguage].aiLoading;
+function getAIPrompt() {
+    const langMap = {
+        'ar': 'Arabic',
+        'en': 'English',
+        'it': 'Italian',
+        'es': 'Spanish'
+    };
+    const language = langMap[currentLanguage] || 'English';
+    const level = playerStats.level;
+    
+    let difficulty = "easy";
+    if (level > 20) difficulty = "hard";
+    else if (level > 5) difficulty = "medium";
 
-    let weakestTopic = 'general';
-    let minScore = 1;
-    for (const [topic, stats] of Object.entries(playerStats.topics)) {
-        const score = stats.total === 0 ? 0 : stats.correct / stats.total;
-        if (score < minScore && stats.total > 0) { 
-            minScore = score;
-            weakestTopic = topic;
-        } else if (stats.total === 0) {
-             weakestTopic = topic;
-        }
-    }
+    const maxLength = Math.min(Math.floor(level / 5) + 3, 8); // 3-letter words up to 8-letter words
+    
+    // Get history to avoid repeats
+    const history = playerStats.history.slice(-10).join(', ');
 
-    const lang = currentLanguage.toUpperCase();
-    const prompt = `
-      You are a fun word puzzle game creator.
-      Provide one (1) new puzzle for a word game.
-      The player is at Level ${playerStats.level}.
-      The player's weakest category is "${weakestTopic}".
-      The game language must be ${lang}.
-      
-      The puzzle word must be between 4 and 8 letters long.
-      The puzzle must include a hint, the word, the category, and 12 letters for the grid.
-      The 12 letters MUST include all unique letters of the word.
-      The 12 letters MUST be provided as a single, shuffled string.
-      
-      Respond ONLY with a valid JSON object in this exact format:
+    return `
+      Generate 1 new word puzzle for a game.
+      The puzzle must be in ${language}.
+      The difficulty must be ${difficulty} (for game level ${level}).
+      The word (answer) must be between 3 and ${maxLength} letters long.
+      The word must NOT be any of these: ${history}.
+      Provide a short hint (clue) for the word.
+      Provide exactly 12 unique letters for the game grid, which MUST include all letters of the word.
+      The 12 letters must be appropriate for the specified language (e.g., no 'W' in Italian).
+
+      Respond ONLY with a JSON object in this exact format:
       {
         "word": "...",
         "hint": "...",
-        "category": "...",
         "letters": "..."
       }
-      
-      Example for ${lang}:
-      {
-        "word": "${translations[lang]?.word || 'WORD'}",
-        "hint": "${translations[lang]?.hint || 'HINT'}",
-        "category": "${translations[lang]?.category || 'CATEGORY'}",
-        "letters": "${translations[lang]?.letters || 'ABCDEFGHIJKL'}"
-      }
     `;
+}
 
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${config.API_KEY}`;
-    
+/**
+ * Fetches a new puzzle from the Gemini AI.
+ */
+async function loadPuzzleFromAI() {
+    const prompt = getAIPrompt();
+    console.log("Requesting puzzle from AI:", prompt);
+
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(config.API_URL + config.API_KEY, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: prompt }] }],
                 generationConfig: {
                     responseMimeType: "application/json",
-                    temperature: 1.0, 
+                    temperature: 1.0,
                 }
             })
         });
 
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
+            throw new Error(`API Error: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
-        
-        if (!data.candidates || !data.candidates[0].content) {
-             throw new Error("Invalid AI response structure.");
-        }
-        
-        const jsonString = data.candidates[0].content.parts[0].text;
-        const puzzleData = JSON.parse(jsonString);
+        const text = data.candidates[0].content.parts[0].text;
+        const puzzleData = JSON.parse(text);
 
+        console.log("AI Response:", puzzleData);
+
+        // Basic validation
         if (!puzzleData.word || !puzzleData.hint || !puzzleData.letters || puzzleData.letters.length !== 12) {
-            throw new Error("Parsed JSON is missing required fields.");
+            throw new Error("Invalid puzzle format from AI.");
         }
         
+        // Add to history
+        playerStats.history.push(puzzleData.word.toUpperCase());
+        if (playerStats.history.length > 50) {
+            playerStats.history.shift(); // Keep history from growing too large
+        }
+
         setupPuzzle(puzzleData);
 
     } catch (error) {
-        console.error("AI Error:", error);
-        
-        if (error.message.includes("API Error") || error.message.includes("Invalid AI response")) {
-            aiLoaderText.textContent = translations[currentLanguage].puzzleError;
-            setTimeout(showGameOver, 2000);
-        } else {
-            aiLoaderText.textContent = translations[currentLanguage].puzzleParseError;
-            setTimeout(loadPuzzleFromAI, 2000); // Retry
-        }
+        console.error("Error loading puzzle from AI:", error);
+        showGameOver(translations[currentLanguage].apiError);
     }
 }
 
+
 /**
  * Shows the game over/error panel.
+ * @param {string} [message] - Optional message to display.
  */
-function showGameOver() {
-    document.getElementById('aiLoader').style.display = 'none';
-    document.getElementById('gameOverPanel').style.display = 'block';
-    document.getElementById('gameOverTip').textContent = translations[currentLanguage].aiError;
+function showGameOver(message) {
+    document.getElementById('aiLoader').style.display = 'none'; // Hide loader if it was on
+    document.getElementById('gameContainer').style.display = 'none'; // Hide game
+    document.getElementById('mainMenu').style.display = 'flex'; // Show menu
+    
+    const panel = document.getElementById('gameOverPanel');
+    panel.style.display = 'block';
+    
+    // Set error message
+    const tipElement = document.getElementById('gameOverTip');
+    if (message) {
+        tipElement.textContent = message;
+    } else {
+        tipElement.textContent = translations[currentLanguage].apiError;
+    }
+    
     feather.replace();
 }
 
@@ -797,7 +779,8 @@ function setupPuzzle(puzzleData) {
     // 1. Set global puzzle state
     currentPuzzle.word = puzzleData.word.toUpperCase();
     currentPuzzle.hint = puzzleData.hint;
-    currentPuzzle.letters = puzzleData.letters.toUpperCase().split('');
+    // Shuffle letters for extra randomness
+    currentPuzzle.letters = puzzleData.letters.toUpperCase().split('').sort(() => Math.random() - 0.5);
     currentPuzzle.answer = Array(currentPuzzle.word.length).fill(null);
     currentPuzzle.filledIndexes = Array(currentPuzzle.word.length).fill(undefined);
     currentPuzzle.firstEmptyBox = 0;
@@ -828,7 +811,7 @@ function setupPuzzle(puzzleData) {
         gridContainer.appendChild(tile);
     });
     
-    // 5. Hide loader, show game
+    // 5. Hide loader (if it was on), show game
     document.getElementById('aiLoader').style.display = 'none';
     document.getElementById('gameContainer').style.display = 'flex';
     feather.replace(); // Replace icons on new game screen (for wand hint)
@@ -903,9 +886,9 @@ function checkWord() {
         playerStats.currency += 10;
         playerStats.progress += 1;
         
-        if (playerStats.progress >= 10) {
+        if (playerStats.progress >= 10) { // 10 words per level
             playerStats.level += 1;
-            playerStats.progress = 0;
+            playerStats.progress = 0; // Reset progress for new level
         }
         
         // Save stats
@@ -1032,6 +1015,7 @@ function useHint() {
  * Handles clicking on the background to close panels.
  */
 function handleBackdropClick(event) {
+    // Only close if the direct click target is the mainMenu itself
     if (event.target.id === 'mainMenu') { 
         if (document.getElementById('settingsPanel').style.display === 'block') {
             toggleSettings();
