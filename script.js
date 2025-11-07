@@ -6,7 +6,7 @@
 // --- Config Placeholder ---
 const config = {
     // NOTE: Replace "YOUR_GEMINI_API_KEY" with your actual key
-    API_KEY: "YOUR_GEMINI_API_KEY",
+    API_KEY: "AIzaSyA07fIjzntygTqDKG1ZWkyQAsfILiwFMD0",
 };
 
 // --- Game State Variables ---
@@ -52,6 +52,7 @@ let currentPuzzle = {
 };
 
 // --- Translations ---
+// MODIFIED: Added all new keys for full translation
 const translations = {
     en: {
         title: "Dr.WEEE's World",
@@ -89,7 +90,26 @@ const translations = {
         puzzleError: "Could not get a puzzle from the AI. Retrying...",
         puzzleParseError: "Failed to parse AI response. Retrying...",
         apiKeyError: "API Key is missing. Please add it to script.js.",
-        chooseLanguage: "Choose Language" // NEW
+        chooseLanguage: "Choose Language",
+        leaderboardLoading: "Loading scores...",
+        // Alt/Aria Translations
+        altPoints: "Points",
+        altLang: "Change Language",
+        ariaLang: "Change Language",
+        altLeaderboard: "Leaderboard",
+        ariaLeaderboard: "Leaderboard",
+        altFriends: "Friends",
+        ariaFriends: "Friends",
+        altSettings: "Settings",
+        ariaSettings: "Settings",
+        altHome: "Home",
+        ariaHome: "Home",
+        altFlameHint: "Flame Hint (Solve)",
+        altWandHint: "Wand Hint (Reveal Letter)",
+        ariaCopy: "Copy Code",
+        // Placeholders
+        placeholderPlayerName: "Enter your name",
+        placeholderFriendCode: "Enter friend code",
     },
     ar: {
         title: "Dr.WEEE's World",
@@ -127,7 +147,26 @@ const translations = {
         puzzleError: "لم نتمكن من الحصول على لغز. جار المحاولة...",
         puzzleParseError: "فشل في تحليل استجابة الذكاء الاصطناعي. جار المحاولة...",
         apiKeyError: " مفتاح API مفقود. يرجى إضافته إلى script.js.",
-        chooseLanguage: "اختر اللغة" // NEW
+        chooseLanguage: "اختر اللغة",
+        leaderboardLoading: "جاري تحميل النقاط...",
+        // Alt/Aria Translations
+        altPoints: "نقاط",
+        altLang: "تغيير اللغة",
+        ariaLang: "تغيير اللغة",
+        altLeaderboard: "المتصدرين",
+        ariaLeaderboard: "المتصدرين",
+        altFriends: "الأصدقاء",
+        ariaFriends: "الأصدقاء",
+        altSettings: "الإعدادات",
+        ariaSettings: "الإعدادات",
+        altHome: "الرئيسية",
+        ariaHome: "الرئيسية",
+        altFlameHint: "تلميح ناري (حل)",
+        altWandHint: "تلميح سحري (كشف حرف)",
+        ariaCopy: "نسخ الرمز",
+        // Placeholders
+        placeholderPlayerName: "أدخل اسمك",
+        placeholderFriendCode: "أدخل رمز الصديق",
     },
     it: {
         title: "Il Mondo del Dr.WEEE",
@@ -165,7 +204,26 @@ const translations = {
         puzzleError: "Impossibile ottenere un puzzle dall'AI. Riprovo...",
         puzzleParseError: "Impossibile analizzare la risposta dell'AI. Riprovo...",
         apiKeyError: "Chiave API mancante. Aggiungila a script.js.",
-        chooseLanguage: "Scegli la lingua" // NEW
+        chooseLanguage: "Scegli la lingua",
+        leaderboardLoading: "Caricamento punteggi...",
+        // Alt/Aria Translations
+        altPoints: "Punti",
+        altLang: "Cambia lingua",
+        ariaLang: "Cambia lingua",
+        altLeaderboard: "Classifica",
+        ariaLeaderboard: "Classifica",
+        altFriends: "Amici",
+        ariaFriends: "Amici",
+        altSettings: "Impostazioni",
+        ariaSettings: "Impostazioni",
+        altHome: "Home",
+        ariaHome: "Home",
+        altFlameHint: "Suggerimento Fuoco (Risolvi)",
+        altWandHint: "Suggerimento Bacchetta (Rivela)",
+        ariaCopy: "Copia codice",
+        // Placeholders
+        placeholderPlayerName: "Inserisci il tuo nome",
+        placeholderFriendCode: "Inserisci codice amico",
     },
     es: {
         title: "El Mundo del Dr.WEEE",
@@ -203,7 +261,26 @@ const translations = {
         puzzleError: "No se pudo obtener un rompecabezas de la IA. Reintentando...",
         puzzleParseError: "Error al analizar la respuesta de la IA. Reintentando...",
         apiKeyError: "Falta la clave API. Agrégala a script.js.",
-        chooseLanguage: "Elige lengua" // NEW
+        chooseLanguage: "Elige lengua",
+        leaderboardLoading: "Cargando puntuaciones...",
+        // Alt/Aria Translations
+        altPoints: "Puntos",
+        altLang: "Cambiar idioma",
+        ariaLang: "Cambiar idioma",
+        altLeaderboard: "Clasificación",
+        ariaLeaderboard: "Clasificación",
+        altFriends: "Amigos",
+        ariaFriends: "Amigos",
+        altSettings: "Ajustes",
+        ariaSettings: "Ajustes",
+        altHome: "Inicio",
+        ariaHome: "Inicio",
+        altFlameHint: "Pista de Fuego (Resolver)",
+        altWandHint: "Pista de Varita (Revelar)",
+        ariaCopy: "Copiar código",
+        // Placeholders
+        placeholderPlayerName: "Escribe tu nombre",
+        placeholderFriendCode: "Escribe código de amigo",
     }
 };
 
@@ -273,12 +350,43 @@ function updateLanguage() {
     document.documentElement.lang = currentLanguage;
     document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
     
+    // Translate all `data-lang` elements
     document.querySelectorAll('[data-lang]').forEach(el => {
         const key = el.getAttribute('data-lang');
         if (translations[currentLanguage] && translations[currentLanguage][key]) {
             el.textContent = translations[currentLanguage][key];
         } else if (translations.en[key]) {
             el.textContent = translations.en[key]; // Fallback to English
+        }
+    });
+
+    // MODIFIED: Translate all `data-lang-placeholder` elements
+    document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-lang-placeholder');
+        if (translations[currentLanguage] && translations[currentLanguage][key]) {
+            el.placeholder = translations[currentLanguage][key];
+        } else if (translations.en[key]) {
+            el.placeholder = translations.en[key]; // Fallback to English
+        }
+    });
+
+    // MODIFIED: Translate all `alt-data-lang` elements
+    document.querySelectorAll('[alt-data-lang]').forEach(el => {
+        const key = el.getAttribute('alt-data-lang');
+        if (translations[currentLanguage] && translations[currentLanguage][key]) {
+            el.alt = translations[currentLanguage][key];
+        } else if (translations.en[key]) {
+            el.alt = translations.en[key]; // Fallback to English
+        }
+    });
+
+    // MODIFIED: Translate all `aria-label-data-lang` elements
+    document.querySelectorAll('[aria-label-data-lang]').forEach(el => {
+        const key = el.getAttribute('aria-label-data-lang');
+        if (translations[currentLanguage] && translations[currentLanguage][key]) {
+            el.setAttribute('aria-label', translations[currentLanguage][key]);
+        } else if (translations.en[key]) {
+            el.setAttribute('aria-label', translations.en[key]); // Fallback to English
         }
     });
 }
@@ -293,7 +401,6 @@ function toggleSettings() {
     if (isOpening) {
         document.getElementById('playerNameInput').value = playerName;
         panel.style.display = 'block';
-        // MODIFIED: Call feather.replace() AFTER showing the panel
         feather.replace(); 
     } else {
         panel.style.display = 'none';
@@ -306,7 +413,6 @@ function toggleSettings() {
 function showFriends() {
     updateFriendsList();
     document.getElementById('friendsPanel').style.display = 'block';
-    // MODIFIED: Call feather.replace() AFTER showing the panel
     feather.replace();
 }
 
@@ -322,9 +428,7 @@ function closeFriends() {
  */
 function showLeaderboard() {
     document.getElementById('leaderboardPanel').style.display = 'block';
-    // MODIFIED: Call feather.replace() AFTER showing the panel
     feather.replace();
-    // Load leaderboard data
     loadLeaderboard();
 }
 
@@ -377,9 +481,7 @@ function removeFriend(code) {
 function copyPlayerCode() {
     const code = document.getElementById('playerCode').textContent;
     
-    // Use modern clipboard API
     navigator.clipboard.writeText(code).then(() => {
-        // Success! Show a temporary checkmark
         const copyBtn = document.querySelector('.copy-btn');
         const originalIcon = copyBtn.innerHTML;
         copyBtn.innerHTML = '<i data-feather="check"></i>';
@@ -392,43 +494,18 @@ function copyPlayerCode() {
         
     }).catch(err => {
         console.error('Failed to copy code: ', err);
-        // Fallback for older browsers
-        try {
-            const textArea = document.createElement('textarea');
-            textArea.value = code;
-            textArea.style.position = 'fixed'; // Avoid scrolling
-            textArea.style.opacity = '0';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            // Show checkmark (as above)
-            const copyBtn = document.querySelector('.copy-btn');
-            const originalIcon = copyBtn.innerHTML;
-            copyBtn.innerHTML = '<i data-feather="check"></i>';
-            feather.replace({ width: '100%', height: '100%' });
-            setTimeout(() => {
-                copyBtn.innerHTML = originalIcon;
-                feather.replace({ width: '100%', height: '100%' });
-            }, 1500);
-        } catch (e) {
-            console.error('Fallback copy failed: ', e);
-        }
     });
 }
 
 
 /**
  * Fetches and displays the leaderboard.
- * This is a placeholder; replace with your database logic.
  */
 function loadLeaderboard() {
     const list = document.getElementById('leaderboardEntries');
-    list.innerHTML = 'Loading...'; // Placeholder
+    list.innerHTML = translations[currentLanguage].leaderboardLoading;
     
     // --- DATABASE PLACEHOLDER ---
-    // In a real app, you would fetch this from your server/database.
     setTimeout(() => {
         const fakeData = [
             { name: 'Player1', score: 1500 },
@@ -449,7 +526,6 @@ function loadLeaderboard() {
 
 /**
  * Populates the background options in the Settings panel.
- * MODIFIED: Now renders <img> or <i> tags based on iconUrl.
  */
 function initSettings() {
     const optionsContainer = document.getElementById('backgroundOptions');
@@ -464,11 +540,8 @@ function initSettings() {
         option.title = bg.name; // For accessibility
 
         if (bg.iconUrl && bg.iconUrl.startsWith('http')) {
-            // It's a full URL, use <img>
             option.innerHTML = `<img src="${bg.iconUrl}" alt="${bg.name}" class="bg-icon-img">`;
         } else {
-            // It's a placeholder (or 'image'), so just show the color
-            // We use the 'color' property which can be a gradient or a URL
             option.style.background = bg.color;
         }
 
@@ -480,14 +553,12 @@ function initSettings() {
         }
     });
 
-    // Apply the saved background
     if (selectedOption) {
         setBackground(savedBg, selectedOption);
     } else {
         setBackground(backgrounds[0].color, optionsContainer.children[0]);
     }
     
-    // Replace Feather icons added to the settings panel
     feather.replace();
 }
 
@@ -518,10 +589,8 @@ function updateUIStats() {
     document.getElementById('mainCurrency').textContent = formattedCurrency;
     document.getElementById('gameCurrency').textContent = formattedCurrency;
     
-    // MODIFIED: Progress is now 0-10, so multiply by 10 for percentage
     const progressPercent = playerStats.progress * 10; 
     document.getElementById('levelProgress').style.width = `${progressPercent}%`;
-    // MODIFIED: Show progress out of 10
     document.getElementById('progressValue').textContent = `${playerStats.progress}/10`; 
     
     const levelText = `${translations[currentLanguage]?.continueLevel || 'Level'} ${playerStats.level}`;
@@ -614,20 +683,18 @@ async function loadPuzzleFromAI() {
     const aiLoaderText = document.getElementById('aiLoaderText');
     aiLoaderText.textContent = translations[currentLanguage].aiLoading;
 
-    // Analyze player stats to find weakest topic
     let weakestTopic = 'general';
     let minScore = 1;
     for (const [topic, stats] of Object.entries(playerStats.topics)) {
         const score = stats.total === 0 ? 0 : stats.correct / stats.total;
-        if (score < minScore && stats.total > 0) { // Prefer topics they've tried
+        if (score < minScore && stats.total > 0) { 
             minScore = score;
             weakestTopic = topic;
-        } else if (stats.total === 0) { // Or try a new topic
+        } else if (stats.total === 0) {
              weakestTopic = topic;
         }
     }
 
-    // Construct the prompt
     const lang = currentLanguage.toUpperCase();
     const prompt = `
       You are a fun word puzzle game creator.
@@ -658,7 +725,6 @@ async function loadPuzzleFromAI() {
       }
     `;
 
-    // --- API Call ---
     const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${config.API_KEY}`;
     
     try {
@@ -669,7 +735,7 @@ async function loadPuzzleFromAI() {
                 contents: [{ parts: [{ text: prompt }] }],
                 generationConfig: {
                     responseMimeType: "application/json",
-                    temperature: 1.0, // Be creative
+                    temperature: 1.0, 
                 }
             })
         });
@@ -696,13 +762,10 @@ async function loadPuzzleFromAI() {
     } catch (error) {
         console.error("AI Error:", error);
         
-        // --- Fallback ---
         if (error.message.includes("API Error") || error.message.includes("Invalid AI response")) {
-            // Serious error, show game over panel
             aiLoaderText.textContent = translations[currentLanguage].puzzleError;
             setTimeout(showGameOver, 2000);
         } else {
-            // Parsing error, try again
             aiLoaderText.textContent = translations[currentLanguage].puzzleParseError;
             setTimeout(loadPuzzleFromAI, 2000); // Retry
         }
@@ -716,7 +779,7 @@ function showGameOver() {
     document.getElementById('aiLoader').style.display = 'none';
     document.getElementById('gameOverPanel').style.display = 'block';
     document.getElementById('gameOverTip').textContent = translations[currentLanguage].aiError;
-    feather.replace(); // MODIFIED: Show icons on error panel
+    feather.replace();
 }
 
 /**
@@ -736,7 +799,7 @@ function setupPuzzle(puzzleData) {
     currentPuzzle.hint = puzzleData.hint;
     currentPuzzle.letters = puzzleData.letters.toUpperCase().split('');
     currentPuzzle.answer = Array(currentPuzzle.word.length).fill(null);
-    currentPuzzle.filledIndexes = [];
+    currentPuzzle.filledIndexes = Array(currentPuzzle.word.length).fill(undefined);
     currentPuzzle.firstEmptyBox = 0;
     
     // 2. Update Hint
@@ -768,7 +831,7 @@ function setupPuzzle(puzzleData) {
     // 5. Hide loader, show game
     document.getElementById('aiLoader').style.display = 'none';
     document.getElementById('gameContainer').style.display = 'flex';
-    feather.replace(); // MODIFIED: Replace icons on new game screen (for wand hint)
+    feather.replace(); // Replace icons on new game screen (for wand hint)
 }
 
 /**
@@ -817,7 +880,7 @@ function onAnswerBoxClick(boxIndex, boxElement) {
     
     // Empty the box
     currentPuzzle.answer[boxIndex] = null;
-    currentPuzzle.filledIndexes[boxIndex] = undefined; // MODIFIED: Use undefined
+    currentPuzzle.filledIndexes[boxIndex] = undefined; 
     boxElement.textContent = '';
     boxElement.classList.remove('filled');
     
@@ -837,15 +900,12 @@ function checkWord() {
     if (guessedWord === currentPuzzle.word) {
         // --- WIN ---
         sounds.win();
-        playerStats.currency += 10; // Reward
-        
-        // MODIFIED: Level-up logic
-        playerStats.progress += 1; // 1 more word solved
+        playerStats.currency += 10;
+        playerStats.progress += 1;
         
         if (playerStats.progress >= 10) {
-            // Level Up!
             playerStats.level += 1;
-            playerStats.progress = 0; // Reset for next level
+            playerStats.progress = 0;
         }
         
         // Save stats
@@ -853,12 +913,10 @@ function checkWord() {
         localStorage.setItem('drweee_level', playerStats.level);
         localStorage.setItem('drweee_progress', playerStats.progress);
         
-        // Update stats
         updateUIStats();
         
-        // Show Level Complete panel
         document.getElementById('levelCompletePanel').style.display = 'block';
-        feather.replace(); // MODIFIED: Show icon on panel
+        feather.replace();
         
     } else {
         // --- LOSE ---
@@ -867,7 +925,6 @@ function checkWord() {
         answerContainer.classList.add('shake');
         setTimeout(() => {
             answerContainer.classList.remove('shake');
-            // Return all letters
             resetAnswerBoxes();
         }, 500);
     }
@@ -877,7 +934,6 @@ function checkWord() {
  * Returns all letters from answer boxes to the grid.
  */
 function resetAnswerBoxes() {
-    // Iterate backwards to avoid issues with indexes
     for (let i = currentPuzzle.answer.length - 1; i >= 0; i--) {
         onAnswerBoxClick(i, document.getElementById('answerBoxes').children[i]);
     }
@@ -901,53 +957,52 @@ function backToMenu() {
 
 /**
  * Uses the "Flame" hint (solves the puzzle).
- * MODIFIED: This logic is now correct.
  */
 function usePowerHint() {
-    if (playerStats.currency < 150) return; // Not enough currency
+    if (playerStats.currency < 150) return; 
     sounds.hint();
     playerStats.currency -= 150;
     updateUIStats();
     localStorage.setItem('drweee_currency', playerStats.currency);
 
-    // Fill the answer boxes with the correct word
     resetAnswerBoxes();
     const wordLetters = currentPuzzle.word.split('');
+    const tiles = document.querySelectorAll('.letter-tile');
     
     wordLetters.forEach((letter, index) => {
-        // Find the first available (enabled) tile with this letter
         let foundTile = null;
-        for (const tile of document.querySelectorAll('.letter-tile:not(:disabled)')) {
-            if (tile.textContent === letter) {
+        // Find the first available (enabled) tile with this letter
+        for (const tile of tiles) {
+            if (!tile.disabled && tile.textContent === letter) {
                 foundTile = tile;
                 break;
             }
         }
         
         if (foundTile) {
-            // Simulate clicking it
             onLetterTileClick(foundTile.textContent, foundTile.dataset.index, foundTile);
         } else {
-            // This case should not happen if the AI prompt is correct
-            // But as a fallback, just fill the box
+            // Fallback: just fill the box text
             const boxElement = document.getElementById('answerBoxes').children[index];
             boxElement.textContent = letter;
             boxElement.classList.add('filled');
             currentPuzzle.answer[index] = letter;
         }
     });
+
+    // Disable all remaining tiles
+    document.querySelectorAll('.letter-tile:not(:disabled)').forEach(tile => tile.disabled = true);
     
-    // Auto-win (checkWord is called by onLetterTileClick if word is full)
+    // Auto-win
+    setTimeout(checkWord, 100);
 }
 
 /**
  * Uses the "Wand" hint (reveals one letter).
- * MODIFIED: This logic is now correct.
  */
 function useHint() {
-    if (playerStats.currency < 50) return; // Not enough currency
+    if (playerStats.currency < 50) return; 
     
-    // Find the first empty box
     const firstEmptyIndex = currentPuzzle.answer.indexOf(null);
     if (firstEmptyIndex === -1) return; // Word is full
 
@@ -956,10 +1011,8 @@ function useHint() {
     updateUIStats();
     localStorage.setItem('drweee_currency', playerStats.currency);
     
-    // Get the correct letter for that box
     const correctLetter = currentPuzzle.word[firstEmptyIndex];
     
-    // Find the first available (enabled) tile with that letter
     let tileToClick = null;
     for (const tile of document.querySelectorAll('.letter-tile:not(:disabled)')) {
         if (tile.textContent === correctLetter) {
@@ -969,7 +1022,6 @@ function useHint() {
     }
     
     if (tileToClick) {
-        // Simulate clicking the found tile
         onLetterTileClick(tileToClick.textContent, tileToClick.dataset.index, tileToClick);
     }
 }
@@ -980,8 +1032,6 @@ function useHint() {
  * Handles clicking on the background to close panels.
  */
 function handleBackdropClick(event) {
-    // MODIFIED: This logic is now correct.
-    // Check if the clicked element is the 'mainMenu' div itself
     if (event.target.id === 'mainMenu') { 
         if (document.getElementById('settingsPanel').style.display === 'block') {
             toggleSettings();
@@ -1005,12 +1055,11 @@ window.onload = () => {
     playerStats.level = parseInt(localStorage.getItem('drweee_level') || '1', 10);
     playerStats.progress = parseInt(localStorage.getItem('drweee_progress') || '0', 10); 
     
-    // MODIFIED: Set language from storage *before* updating UI
     const savedLang = localStorage.getItem('drweee_language') || 'ar';
     currentLanguage = savedLang;
     if (languages.indexOf(savedLang) > -1) {
         currentLangIndex = languages.indexOf(savedLang);
-    } // else default to 0 ('ar')
+    }
     
     try {
         friends = JSON.parse(localStorage.getItem('drweee_friends') || '[]');
@@ -1031,11 +1080,6 @@ window.onload = () => {
     // 4. Add listeners
     document.getElementById('musicVolume').addEventListener('input', e => {
         musicVolume = e.target.value / 100;
-        // Adjust gain if audioContext is already initialized
-        if (audioContext && bgMusic) {
-            // This is a bit complex, let's just update the variable
-            // The music volume will be set on next play
-        }
     });
     document.getElementById('sfxVolume').addEventListener('input', e => {
         sfxVolume = e.target.value / 100;
@@ -1047,7 +1091,6 @@ window.onload = () => {
     
     // Listener for closing panels
     document.getElementById('mainMenu').addEventListener('click', handleBackdropClick);
-    // MODIFIED: Added touch listener for mobile
     document.getElementById('mainMenu').addEventListener('touchstart', handleBackdropClick);
 
     // 5. Replace all initial icons
@@ -1057,8 +1100,6 @@ window.onload = () => {
     setTimeout(() => {
         document.getElementById('loadingScreen').style.opacity = '0';
         setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
-        
-        // Try to init audio after a short delay (user interaction is better)
         setTimeout(initAudio, 500);
-    }, 1000); // Simulate load time
+    }, 1000); 
 };
