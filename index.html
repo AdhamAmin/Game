@@ -3,108 +3,82 @@
   This HTML file is based *exactly* on the layout from the image you sent.
   It's set to 'ar' (Arabic) by default but can be changed.
 -->
-<html lang="ar" dir="rtl">
+<!-- MODIFIED: Removed lang and dir. script.js will handle this. -->
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- Game Title -->
-    <title data-lang="title">Dr.WEEE's World</title>
+    <!-- Game Title --><title data-lang="title">Dr.WEEE's World</title>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Fonts --><link href="https://googleapis.com/css2?family=Fredoka+One&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css">
+    <!-- Stylesheet --><link rel="stylesheet" href="style.css">
     
-    <!-- Feather Icons -->
-    <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Feather Icons --><script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     
     <!-- 
       Main App Container
       The background image is applied here by the script.
-    -->
-    <div id="appContainer">
+    --><div id="appContainer">
 
-        <!-- Loading Screen -->
-        <div class="loading-screen" id="loadingScreen">
+        <!-- Loading Screen --><div class="loading-screen" id="loadingScreen">
             <h1 class="loading-title" data-lang="gameTitle">كلمات</h1>
             <div class="loading-bar-container"><div class="loading-bar" id="loadingBar"></div></div>
             <p class="loading-text" id="loadingText">Loading... 0%</p>
         </div>
         
         <!-- AI Puzzle Loading Spinner (Hidden by default) -->
+        <!-- MODIFIED: Fixed typo 'classs' to 'class' -->
         <div class="loading-screen" id="aiLoader" style="display: none;">
             <div class="spinner"></div>
-            <p classs="loading-text" id="aiLoaderText" data-lang="aiLoading">Finding a new puzzle...</p>
+            <p class="loading-text" id="aiLoaderText" data-lang="aiLoading">Finding a new puzzle...</p>
         </div>
 
         <!-- 
           Main Menu Screen
           This is the "Home" screen from your image.
-        -->
-        <div class="game-screen" id="mainMenu">
+        --><div class="game-screen" id="mainMenu">
             <div class="top-bar">
 
-                <!-- New container for left-aligned items -->
-                <div class="top-bar-left">
+                <!-- New container for left-aligned items --><div class="top-bar-left">
                     <div class="currency-display">
                         <!-- 
-                          NOTE: Paste your direct .png link from:
-                          https://www.thiings.co/things/diamond
-                          into the src="" below.
-                        -->
-                        <img src="https" alt="Points" class="currency-icon">
+                          Points/Diamond Icon
+                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-XLZN4UD8ZXfIiMBZmK2JjIuzb4J8ax.png&w=1000&q=75" alt="Points" class="currency-icon">
                         <span id="mainCurrency">1230</span>
                     </div>
 
-                    <!-- Language Button Moved Here -->
-                    <select id="languageSelect" onchange="changeLanguage()" class="language-select-circle">
-                        <option value="ar">🇸🇦</option>
-                        <option value="en">🇬🇧</option>
-                        <option value="it">🇮🇹</option>
-                        <option value="es">🇪🇸</option>
-                    </select>
+                    <!-- Language Button --><!-- MODIFIED: Now opens a panel --><button class="icon-btn" id="languageBtn" onclick="toggleLanguagePanel()" aria-label="Change Language">
+                        <img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-I41qhHxvqpBLmLsptMSZrbUHwbMr2U.png&w=1000&q=75" alt="Language" class="img-icon">
+                    </button>
                 </div>
 
-                <!-- Icons exactly as requested -->
-                <div class="icon-buttons">
+                <!-- Icons exactly as requested --><div class="icon-buttons">
                     <button class="icon-btn" onclick="showLeaderboard()" aria-label="Leaderboard">
                         <!-- 
-                          NOTE: Paste your direct .png link from:
-                          https://www.thiings.co/things/leaderboard
-                          into the src="" below.
-                        -->
-                        <img src="https" alt="Leaderboard" class="img-icon">
+                          Leaderboard Icon
+                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-d2E4v7g51TmwSQg2ReSaW4fkv80sBI.png&w=1000&q=75" alt="Leaderboard" class="img-icon">
                     </button>
                     <button class="icon-btn" onclick="showFriends()" aria-label="Friends">
                         <!-- 
-                          NOTE: Paste your direct .png link from:
-                          https://www.thiings.co/things/twins
-                          into the src="" below.
-                        -->
-                        <img src="https" alt="Friends" class="img-icon">
+                          Friends Icon
+                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-P05fu8WEQj8szOXCHhA0gkgXa66GIU.png&w=1000&q=75" alt="Friends" class="img-icon">
                     </button>
                     <button class="icon-btn" onclick="toggleSettings()" aria-label="Settings">
                         <!-- 
-                          NOTE: Paste your direct .png link from:
-                          https://www.thiings.co/things/forest-glade
-                          into the src="" below.
-                        -->
-                        <img src="https" alt="Settings" class="img-icon">
+                          Settings Icon
+                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-5WOZbM8gOwMf0RATXQa7UL57OKFSMg.png&w=1000&q=75" alt="Settings" class="img-icon">
                     </button>
                 </div>
             </div>
 
-            <!-- Main Content Area -->
-            <div class="main-content">
+            <!-- Main Content Area --><div class="main-content">
                 
-                <!-- Progress Bar Area (with Glassmorphism) -->
-                <div class="progress-container">
-                    <!-- Title "WORDS" now inside the bar -->
-                    <h1 class="game-title" data-lang="gameTitle">كلمات</h1>
+                <!-- Progress Bar Area (with Glassmorphism) --><div class="progress-container">
+                    <!-- Title "WORDS" now inside the bar --><h1 class="game-title" data-lang="gameTitle">كلمات</h1>
                     
                     <div class="progress-labels">
                         <span class="progress-rank" data-lang="beginner">مبتدئ</span>
@@ -113,76 +87,58 @@
                     <div class="progress-bar-outer">
                         <div class="progress-bar-inner" id="levelProgress" style="width: 18%;"></div>
                     </div>
-                    <div class="progress-value" id="progressValue">18/100</div>
+                    <div class="progress-value" id="progressValue">0/10</div>
                 </div>
                 
-                <!-- Play Button (Level) -->
-                <button class="play-btn" id="continueBtn" onclick="startGame()">
-                    <span data-lang="continueLevel">المستوى</span> 7
+                <!-- Play Button (Level) --><button class="play-btn" id="continueBtn" onclick="startGame()">
+                    <span data-lang="continueLevel">المستوى</span> 1
                 </button>
             </div>
             
-            <!-- Language Selector Container REMOVED from here -->
         </div>
         
         <!-- 
           Word Puzzle Screen (Hidden by default)
           This is the "Game" screen from your image.
-        -->
-        <div class="game-screen" id="gameContainer" style="display: none;">
+        --><div class="game-screen" id="gameContainer" style="display: none;">
             <div class="top-bar">
                 <div class="currency-display">
                     <!-- 
-                      NOTE: Paste your direct .png link from:
-                      https://www.thiings.co/things/diamond
-                      into the src="" below.
-                    -->
-                    <img src="https" alt="Points" class="currency-icon">
+                      Points/Diamond Icon
+                    --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-XLZN4UD8ZXfIiMBZmK2JjIuzb4J8ax.png&w=1000&q=75" alt="Points" class="currency-icon">
                     <span id="gameCurrency">1230</span>
                 </div>
-                <!-- Level Title -->
-                <h2 class="game-level-title" id="gameLevelTitle">
-                    <span data-lang="level">المستوى</span> 7
+                <!-- Level Title --><h2 class="game-level-title" id="gameLevelTitle">
+                    <span data-lang="level">المستوى</span> 1
                 </h2>
-                <!-- Home Button -->
-                <div class="icon-buttons">
+                <!-- Home Button --><div class="icon-buttons">
                     <button class="icon-btn" onclick="backToMenu()" aria-label="Home">
-                        <i data-feather="home"></i>
+                        <img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-6F0Oea8suMLdEi6BoluXYbqXxnWEdt.png&w=320&q=75" alt="Home" class="img-icon">
                     </button>
                 </div>
             </div>
 
             <div class="puzzle-content">
-                <!-- Hint Box -->
-                <div class="hint-box" id="gameHint">
-                    عاصمة المملكة المتحدة
+                <!-- Hint Box --><div class="hint-box" id="gameHint">
+                    ...
                 </div>
                 
-                <!-- Answer Boxes (Will be empty) -->
-                <div class="answer-boxes" id="answerBoxes">
-                    <!-- Letter boxes for the answer will be generated here by script.js -->
-                </div>
+                <!-- Answer Boxes (Will be empty) --><div class="answer-boxes" id="answerBoxes">
+                    <!-- Letter boxes for the answer will be generated here by script.js --></div>
                 
-                <!-- Letter Grid (3 columns) -->
-                <div class="letter-grid" id="letterGrid">
-                    <!-- 12 letter tiles will be generated here by script.js -->
-                </div>
+                <!-- Letter Grid (3 columns) --><div class="letter-grid" id="letterGrid">
+                    <!-- 12 letter tiles will be generated here by script.js --></div>
 
-                <!-- Footer with Hints -->
-                <div class="game-footer">
+                <!-- Footer with Hints --><div class="game-footer">
                     <button class="power-up-btn" id="powerHintBtn" onclick="usePowerHint()">
                         <!-- 
-                          NOTE: Paste your direct .png link from:
-                          https://www.thiings.co/things/flame
-                          into the src="" below.
-                        -->
-                        <img src="https" alt="Flame Hint" class="power-up-icon">
+                          Flame Hint Icon
+                        --><img src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-VgWX4UmDW5pY171o65GSc2VFAIfUMl.png&w=1000&q=75" alt="Flame Hint" class="power-up-icon">
                         <span>150</span>
                     </button>
                     <a href="#" class="report-link" data-lang="reportProblem">الإبلاغ عن مشكلة</a>
                     <button class="power-up-btn" id="hintBtn" onclick="useHint()">
-                        <i data-feather="help-circle"></i> <!-- "Wand" icon -->
-                        <span>50</span>
+                        <i data-feather="help-circle"></i> <!-- "Wand" icon --><span>50</span>
                     </button>
                 </div>
             </div>
@@ -191,10 +147,7 @@
 
         <!-- 
           PANELS (Overlays)
-        -->
-
-        <!-- Settings Panel -->
-        <div class="panel" id="settingsPanel" style="display: none;">
+        --><!-- Settings Panel --><div class="panel" id="settingsPanel" style="display: none;">
             <h2 data-lang="settings">الإعدادات</h2>
             <button class="close-btn" onclick="toggleSettings()"><i data-feather="x"></i></button>
             <div class="panel-content">
@@ -211,24 +164,26 @@
                     <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="70">
                 </div>
                 
-                <!-- Backgrounds -->
-                <div class="setting-item" id="backgroundSettings">
+                <!-- Backgrounds --><div class="setting-item" id="backgroundSettings">
                     <label class="setting-label" data-lang="chooseBackground">Choose Background</label>
                     <div class="background-options" id="backgroundOptions">
-                        <!-- Populated by JS -->
-                    </div>
+                        <!-- Populated by JS --></div>
                 </div>
             </div>
         </div>
 
-        <!-- Friends Panel -->
-        <div class="panel" id="friendsPanel" style="display: none;">
+        <!-- Friends Panel --><div class="panel" id="friendsPanel" style="display: none;">
             <h2 data-lang="friends">الأصدقاء</h2>
             <button class="close-btn" onclick="closeFriends()"><i data-feather="x"></i></button>
             <div class="panel-content">
                 <div class="setting-item">
                     <label class="setting-label" data-lang="yourCode">Your Player Code</label>
-                    <div class="player-code" id="playerCode">LOADING...</div>
+                    <!-- MODIFIED: Added container and copy button --><div class="player-code-container">
+                        <span class="player-code" id="playerCode">LOADING...</span>
+                        <button class="copy-btn" onclick="copyPlayerCode()" aria-label="Copy Code">
+                            <i data-feather="copy"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="setting-item">
                     <label class="setting-label" data-lang="addFriend">Add Friend by Code</label>
@@ -239,19 +194,29 @@
             </div>
         </div>
         
-        <!-- Leaderboard Panel -->
-        <div class="panel" id="leaderboardPanel" style="display: none;">
+        <!-- Leaderboard Panel --><div class="panel" id="leaderboardPanel" style="display: none;">
             <h2 data-lang="leaderboard">المتصدرين</h2>
             <button class="close-btn" onclick="closeLeaderboard()"><i data-feather="x"></i></button>
             <div class="panel-content">
                 <div class="friends-list" id="leaderboardEntries">
-                    <!-- Populated by JS -->
+                    <!-- Populated by JS --></div>
+            </div>
+        </div>
+
+        <!-- NEW: Language Panel --><div class="panel" id="languagePanel" style="display: none;">
+            <h2 data-lang="chooseLanguage">Choose Language</h2>
+            <button class="close-btn" onclick="toggleLanguagePanel()"><i data-feather="x"></i></button>
+            <div class="panel-content">
+                <div class="language-options">
+                    <button class="panel-btn" onclick="selectLanguage('ar')">🇸🇦 العربية</button>
+                    <button class="panel-btn" onclick="selectLanguage('en')">🇬🇧 English</button>
+                    <button class="panel-btn" onclick="selectLanguage('it')">🇮🇹 Italiano</button>
+                    <button class="panel-btn" onclick="selectLanguage('es')">🇪🇸 Español</button>
                 </div>
             </div>
         </div>
         
-        <!-- Level Complete Panel -->
-        <div class="panel" id="levelCompletePanel" style="display: none;">
+        <!-- Level Complete Panel --><div class="panel" id="levelCompletePanel" style="display: none;">
             <div class="panel-content" style="text-align: center;">
                 <h2>🎉</h2>
                 <h2 data-lang="levelComplete">Level Complete!</h2>
@@ -260,8 +225,7 @@
             </div>
         </div>
         
-        <!-- Game Over / Error Panel -->
-        <div class="panel" id="gameOverPanel" style="display: none;">
+        <!-- Game Over / Error Panel --><div class="panel" id="gameOverPanel" style="display: none;">
              <div class="panel-content" style="text-align: center;">
                 <h2 data-lang="aiErrorTitle">Error</h2>
                 <p id="gameOverTip" data-lang="aiError">Could not load puzzle.</p>
@@ -270,9 +234,6 @@
             </div>
         </div>
         
-    </div> <!-- /#appContainer -->
-
-    <!-- Main Game Script -->
-    <script src="script.js"></script>
+    </div> <!-- /#appContainer --><!-- Main Game Script --><script src="script.js"></script>
 </body>
 </html>
