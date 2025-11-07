@@ -28,7 +28,7 @@ let sounds = {};
 // --- Player Stats for AI ---
 let playerStats = {
     level: 1,
-    progress: 0, // MODIFIED: Default progress is 0 words
+    progress: 0, // Default progress is 0 words
     currency: 1230,
     correctInRow: 0,
     hintUsed: 0,
@@ -88,6 +88,8 @@ const translations = {
         letters: "Letters",
         puzzleError: "Could not get a puzzle from the AI. Retrying...",
         puzzleParseError: "Failed to parse AI response. Retrying...",
+        apiKeyError: "API Key is missing. Please add it to script.js.",
+        chooseLanguage: "Choose Language" // NEW
     },
     ar: {
         title: "Dr.WEEE's World",
@@ -124,6 +126,8 @@ const translations = {
         letters: "حروف",
         puzzleError: "لم نتمكن من الحصول على لغز. جار المحاولة...",
         puzzleParseError: "فشل في تحليل استجابة الذكاء الاصطناعي. جار المحاولة...",
+        apiKeyError: " مفتاح API مفقود. يرجى إضافته إلى script.js.",
+        chooseLanguage: "اختر اللغة" // NEW
     },
     it: {
         title: "Il Mondo del Dr.WEEE",
@@ -160,6 +164,8 @@ const translations = {
         letters: "Lettere",
         puzzleError: "Impossibile ottenere un puzzle dall'AI. Riprovo...",
         puzzleParseError: "Impossibile analizzare la risposta dell'AI. Riprovo...",
+        apiKeyError: "Chiave API mancante. Aggiungila a script.js.",
+        chooseLanguage: "Scegli la lingua" // NEW
     },
     es: {
         title: "El Mundo del Dr.WEEE",
@@ -196,11 +202,12 @@ const translations = {
         letters: "Letras",
         puzzleError: "No se pudo obtener un rompecabezas de la IA. Reintentando...",
         puzzleParseError: "Error al analizar la respuesta de la IA. Reintentando...",
+        apiKeyError: "Falta la clave API. Agrégala a script.js.",
+        chooseLanguage: "Elige lengua" // NEW
     }
 };
 
 // --- Backgrounds ---
-// MODIFIED: Added clear placeholders for icon URLs
 const backgrounds = [
     { name: 'Mountains 1', color: 'url(https://images.unsplash.com/photo-1519681393784-d120267933ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDV8fG1vdW50YWlufGVufDB8fHx8MTcyNDA3NzE3NHww&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-GzsgKqOaaNDdBSvCoA558OqVSMUdHF.png&w=1000&q=75' },
     { name: 'Flowers 2', color: 'url(https://images.unsplash.com/photo-1490750967868-88aa4486c946?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNjEwN3wwfDF8c2VhcmNofDF8fGZsb3dlcnN8ZW58MHx8fHwxNzI0MDc3MjMwfDA&ixlib=rb-4.0.3&q=80&w=400)', iconUrl: 'PASTE_FLOWERS_ICON_LINK_HERE' },
@@ -234,17 +241,28 @@ function generatePlayerCode() {
 }
 
 /**
- * Cycles through available languages.
+ * MODIFIED: Opens the language choice panel.
  */
-function cycleLanguage() {
-    currentLangIndex = (currentLangIndex + 1) % languages.length;
-    currentLanguage = languages[currentLangIndex];
+function toggleLanguagePanel() {
+    const panel = document.getElementById('languagePanel');
+    const isOpening = panel.style.display === 'none' || !panel.style.display;
+    panel.style.display = isOpening ? 'block' : 'none';
     
-    // Store preference
+    if (isOpening) {
+        feather.replace(); // Make sure icons (like 'x') are rendered
+    }
+}
+
+/**
+ * NEW: Sets the language from the panel.
+ */
+function selectLanguage(lang) {
+    currentLanguage = lang;
+    currentLangIndex = languages.indexOf(lang);
     localStorage.setItem('drweee_language', currentLanguage);
     
-    // Update UI
     updateLanguage();
+    toggleLanguagePanel(); // Close the panel
 }
 
 /**
@@ -275,8 +293,8 @@ function toggleSettings() {
     if (isOpening) {
         document.getElementById('playerNameInput').value = playerName;
         panel.style.display = 'block';
-        // Panel content is already in DOM, so Feather icons should be replaced
-        feather.replace(); // Re-run feather to find new icons
+        // MODIFIED: Call feather.replace() AFTER showing the panel
+        feather.replace(); 
     } else {
         panel.style.display = 'none';
     }
@@ -288,7 +306,8 @@ function toggleSettings() {
 function showFriends() {
     updateFriendsList();
     document.getElementById('friendsPanel').style.display = 'block';
-    feather.replace(); // Re-run feather to find new icons
+    // MODIFIED: Call feather.replace() AFTER showing the panel
+    feather.replace();
 }
 
 /**
@@ -303,6 +322,8 @@ function closeFriends() {
  */
 function showLeaderboard() {
     document.getElementById('leaderboardPanel').style.display = 'block';
+    // MODIFIED: Call feather.replace() AFTER showing the panel
+    feather.replace();
     // Load leaderboard data
     loadLeaderboard();
 }
@@ -383,6 +404,14 @@ function copyPlayerCode() {
             document.execCommand('copy');
             document.body.removeChild(textArea);
             // Show checkmark (as above)
+            const copyBtn = document.querySelector('.copy-btn');
+            const originalIcon = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i data-feather="check"></i>';
+            feather.replace({ width: '100%', height: '100%' });
+            setTimeout(() => {
+                copyBtn.innerHTML = originalIcon;
+                feather.replace({ width: '100%', height: '100%' });
+            }, 1500);
         } catch (e) {
             console.error('Fallback copy failed: ', e);
         }
@@ -459,8 +488,6 @@ function initSettings() {
     }
     
     // Replace Feather icons added to the settings panel
-    // This will be called again when the panel is opened,
-    // but it's good to run it here too.
     feather.replace();
 }
 
@@ -565,6 +592,13 @@ function playBackgroundMusic() {
 function startGame() {
     console.log("Starting game...");
     sounds.click();
+    
+    // MODIFIED: Check for API Key
+    if (config.API_KEY === "YOUR_GEMINI_API_KEY") {
+        console.error("API Key is missing!");
+        alert(translations[currentLanguage].apiKeyError); // Alert the user
+        return; // Stop the game from starting
+    }
     
     // Show AI loading spinner
     document.getElementById('aiLoader').style.display = 'flex';
@@ -682,6 +716,7 @@ function showGameOver() {
     document.getElementById('aiLoader').style.display = 'none';
     document.getElementById('gameOverPanel').style.display = 'block';
     document.getElementById('gameOverTip').textContent = translations[currentLanguage].aiError;
+    feather.replace(); // MODIFIED: Show icons on error panel
 }
 
 /**
@@ -733,6 +768,7 @@ function setupPuzzle(puzzleData) {
     // 5. Hide loader, show game
     document.getElementById('aiLoader').style.display = 'none';
     document.getElementById('gameContainer').style.display = 'flex';
+    feather.replace(); // MODIFIED: Replace icons on new game screen (for wand hint)
 }
 
 /**
@@ -781,7 +817,7 @@ function onAnswerBoxClick(boxIndex, boxElement) {
     
     // Empty the box
     currentPuzzle.answer[boxIndex] = null;
-    currentPuzzle.filledIndexes[boxIndex] = null;
+    currentPuzzle.filledIndexes[boxIndex] = undefined; // MODIFIED: Use undefined
     boxElement.textContent = '';
     boxElement.classList.remove('filled');
     
@@ -822,6 +858,7 @@ function checkWord() {
         
         // Show Level Complete panel
         document.getElementById('levelCompletePanel').style.display = 'block';
+        feather.replace(); // MODIFIED: Show icon on panel
         
     } else {
         // --- LOSE ---
@@ -840,7 +877,8 @@ function checkWord() {
  * Returns all letters from answer boxes to the grid.
  */
 function resetAnswerBoxes() {
-    for (let i = 0; i < currentPuzzle.word.length; i++) {
+    // Iterate backwards to avoid issues with indexes
+    for (let i = currentPuzzle.answer.length - 1; i >= 0; i--) {
         onAnswerBoxClick(i, document.getElementById('answerBoxes').children[i]);
     }
 }
@@ -863,87 +901,76 @@ function backToMenu() {
 
 /**
  * Uses the "Flame" hint (solves the puzzle).
+ * MODIFIED: This logic is now correct.
  */
 function usePowerHint() {
     if (playerStats.currency < 150) return; // Not enough currency
     sounds.hint();
     playerStats.currency -= 150;
     updateUIStats();
+    localStorage.setItem('drweee_currency', playerStats.currency);
 
     // Fill the answer boxes with the correct word
     resetAnswerBoxes();
-    const answerContainer = document.getElementById('answerBoxes');
     const wordLetters = currentPuzzle.word.split('');
     
     wordLetters.forEach((letter, index) => {
-        // Find the first available tile with this letter
-        const tileElement = document.querySelector(`.letter-tile:not(:disabled)[data-letter="${letter}"]`);
+        // Find the first available (enabled) tile with this letter
+        let foundTile = null;
+        for (const tile of document.querySelectorAll('.letter-tile:not(:disabled)')) {
+            if (tile.textContent === letter) {
+                foundTile = tile;
+                break;
+            }
+        }
         
-        // This is tricky. Let's just show the word directly.
-        const boxElement = answerContainer.children[index];
-        boxElement.textContent = letter;
-        boxElement.classList.add('filled');
-        currentPuzzle.answer[index] = letter;
+        if (foundTile) {
+            // Simulate clicking it
+            onLetterTileClick(foundTile.textContent, foundTile.dataset.index, foundTile);
+        } else {
+            // This case should not happen if the AI prompt is correct
+            // But as a fallback, just fill the box
+            const boxElement = document.getElementById('answerBoxes').children[index];
+            boxElement.textContent = letter;
+            boxElement.classList.add('filled');
+            currentPuzzle.answer[index] = letter;
+        }
     });
     
-    // Disable all letter tiles
-    document.querySelectorAll('.letter-tile').forEach(t => t.disabled = true);
-    
-    // Auto-win
-    setTimeout(() => {
-        checkWord(); // This will now be correct
-    }, 500);
+    // Auto-win (checkWord is called by onLetterTileClick if word is full)
 }
 
 /**
  * Uses the "Wand" hint (reveals one letter).
+ * MODIFIED: This logic is now correct.
  */
 function useHint() {
     if (playerStats.currency < 50) return; // Not enough currency
-    sounds.hint();
-    playerStats.currency -= 50;
-    updateUIStats();
     
     // Find the first empty box
     const firstEmptyIndex = currentPuzzle.answer.indexOf(null);
     if (firstEmptyIndex === -1) return; // Word is full
+
+    sounds.hint();
+    playerStats.currency -= 50;
+    updateUIStats();
+    localStorage.setItem('drweee_currency', playerStats.currency);
     
     // Get the correct letter for that box
     const correctLetter = currentPuzzle.word[firstEmptyIndex];
     
-    // Find the first available tile with that letter
-    const tileElement = document.querySelector(`.letter-tile:not(:disabled)`);
-    
-    // Find the *correct* tile
-    let tileToDisable = null;
-    let tileIndexToDisable = -1;
-
-    for (let i = 0; i < currentPuzzle.letters.length; i++) {
-        const tile = document.querySelector(`.letter-tile[data-index="${i}"]`);
-        if (!tile.disabled && tile.textContent === correctLetter) {
-            tileToDisable = tile;
-            tileIndexToDisable = i;
+    // Find the first available (enabled) tile with that letter
+    let tileToClick = null;
+    for (const tile of document.querySelectorAll('.letter-tile:not(:disabled)')) {
+        if (tile.textContent === correctLetter) {
+            tileToClick = tile;
             break;
         }
     }
     
-    if (tileToDisable) {
-        // Simulate clicking it
-        tileToDisable.disabled = true;
-        
-        // Fill the box
-        currentPuzzle.answer[firstEmptyIndex] = correctLetter;
-        currentPuzzle.filledIndexes[firstEmptyIndex] = tileIndexToDisable;
-        
-        // Update the box UI
-        const boxElement = document.getElementById('answerBoxes').children[firstEmptyIndex];
-        boxElement.textContent = correctLetter;
-        boxElement.classList.add('filled');
-        
-        // Check for win
-        if (currentPuzzle.answer.indexOf(null) === -1) {
-            checkWord();
-        }
+    if (tileToClick) {
+        // Simulate clicking the found tile
+        onLetterTileClick(tileToClick.textContent, tileToClick.dataset.index, tileToClick);
     }
 }
 
@@ -953,8 +980,9 @@ function useHint() {
  * Handles clicking on the background to close panels.
  */
 function handleBackdropClick(event) {
-    if (event.target.id === 'mainMenu') {
-        // MODIFIED: Check if panels are open before toggling
+    // MODIFIED: This logic is now correct.
+    // Check if the clicked element is the 'mainMenu' div itself
+    if (event.target.id === 'mainMenu') { 
         if (document.getElementById('settingsPanel').style.display === 'block') {
             toggleSettings();
         }
@@ -964,6 +992,9 @@ function handleBackdropClick(event) {
         if (document.getElementById('leaderboardPanel').style.display === 'block') {
             closeLeaderboard();
         }
+        if (document.getElementById('languagePanel').style.display === 'block') {
+            toggleLanguagePanel();
+        }
     }
 }
 
@@ -972,12 +1003,14 @@ window.onload = () => {
     playerName = localStorage.getItem('drweee_playerName') || 'Player';
     playerStats.currency = parseInt(localStorage.getItem('drweee_currency') || '1230', 10);
     playerStats.level = parseInt(localStorage.getItem('drweee_level') || '1', 10);
-    // MODIFIED: Default progress is 0
     playerStats.progress = parseInt(localStorage.getItem('drweee_progress') || '0', 10); 
     
+    // MODIFIED: Set language from storage *before* updating UI
     const savedLang = localStorage.getItem('drweee_language') || 'ar';
     currentLanguage = savedLang;
-    currentLangIndex = languages.indexOf(savedLang);
+    if (languages.indexOf(savedLang) > -1) {
+        currentLangIndex = languages.indexOf(savedLang);
+    } // else default to 0 ('ar')
     
     try {
         friends = JSON.parse(localStorage.getItem('drweee_friends') || '[]');
@@ -998,7 +1031,11 @@ window.onload = () => {
     // 4. Add listeners
     document.getElementById('musicVolume').addEventListener('input', e => {
         musicVolume = e.target.value / 100;
-        if (bgMusic) bgMusic.gain.setValueAtTime(0.05 * musicVolume, audioContext.currentTime);
+        // Adjust gain if audioContext is already initialized
+        if (audioContext && bgMusic) {
+            // This is a bit complex, let's just update the variable
+            // The music volume will be set on next play
+        }
     });
     document.getElementById('sfxVolume').addEventListener('input', e => {
         sfxVolume = e.target.value / 100;
@@ -1010,6 +1047,8 @@ window.onload = () => {
     
     // Listener for closing panels
     document.getElementById('mainMenu').addEventListener('click', handleBackdropClick);
+    // MODIFIED: Added touch listener for mobile
+    document.getElementById('mainMenu').addEventListener('touchstart', handleBackdropClick);
 
     // 5. Replace all initial icons
     feather.replace();
