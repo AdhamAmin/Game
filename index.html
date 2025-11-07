@@ -47,37 +47,53 @@
         -->
         <div class="game-screen" id="mainMenu">
             <div class="top-bar">
-                <div class="currency-display">
-                    <!-- 
-                      Updated to use your points icon.
-                      Please download the image from the link you sent,
-                      save it as "points_icon.png" in your project folder.
-                    -->
-                    <img src="points_icon.png" alt="Points" class="currency-icon">
-                    <span id="mainCurrency">1230</span>
+
+                <!-- New container for left-aligned items -->
+                <div class="top-bar-left">
+                    <div class="currency-display">
+                        <!-- 
+                          NOTE: Paste your direct .png link from:
+                          https://www.thiings.co/things/diamond
+                          into the src="" below.
+                        -->
+                        <img src="https" alt="Points" class="currency-icon">
+                        <span id="mainCurrency">1230</span>
+                    </div>
+
+                    <!-- Language Button Moved Here -->
+                    <select id="languageSelect" onchange="changeLanguage()" class="language-select-circle">
+                        <option value="ar">🇸🇦</option>
+                        <option value="en">🇬🇧</option>
+                        <option value="it">🇮🇹</option>
+                        <option value="es">🇪🇸</option>
+                    </select>
                 </div>
+
                 <!-- Icons exactly as requested -->
                 <div class="icon-buttons">
                     <button class="icon-btn" onclick="showLeaderboard()" aria-label="Leaderboard">
                         <!-- 
-                          You will need to download the icon from the link you sent, 
-                          save it as "leaderboard_icon.png" in your project folder.
+                          NOTE: Paste your direct .png link from:
+                          https://www.thiings.co/things/leaderboard
+                          into the src="" below.
                         -->
-                        <img src="leaderboard_icon.png" alt="Leaderboard" class="img-icon">
+                        <img src="https" alt="Leaderboard" class="img-icon">
                     </button>
                     <button class="icon-btn" onclick="showFriends()" aria-label="Friends">
                         <!-- 
-                          You will need to download the icon from the link you sent, 
-                          save it as "friends_icon.png" in your project folder.
+                          NOTE: Paste your direct .png link from:
+                          https://www.thiings.co/things/twins
+                          into the src="" below.
                         -->
-                        <img src="friends_icon.png" alt="Friends" class="img-icon">
+                        <img src="https" alt="Friends" class="img-icon">
                     </button>
                     <button class="icon-btn" onclick="toggleSettings()" aria-label="Settings">
                         <!-- 
-                          You will need to download the icon from the link you sent, 
-                          save it as "settings_icon.png" in your project folder.
+                          NOTE: Paste your direct .png link from:
+                          https://www.thiings.co/things/forest-glade
+                          into the src="" below.
                         -->
-                        <img src="settings_icon.png" alt="Settings" class="img-icon">
+                        <img src="https" alt="Settings" class="img-icon">
                     </button>
                 </div>
             </div>
@@ -106,15 +122,7 @@
                 </button>
             </div>
             
-            <!-- Language Selector (optional, could be in settings) -->
-            <div class="language-selector-container">
-                <select id="languageSelect" onchange="changeLanguage()">
-                    <option value="ar">🇸🇦 العربية</option>
-                    <option value="en">🇬🇧 English</option>
-                    <option value="it">🇮🇹 Italiano</option>
-                    <option value="es">🇪🇸 Español</option>
-                </select>
-            </div>
+            <!-- Language Selector Container REMOVED from here -->
         </div>
         
         <!-- 
@@ -125,11 +133,11 @@
             <div class="top-bar">
                 <div class="currency-display">
                     <!-- 
-                      Updated to use your points icon.
-                      Please download the image from the link you sent,
-                      save it as "points_icon.png" in your project folder.
+                      NOTE: Paste your direct .png link from:
+                      https://www.thiings.co/things/diamond
+                      into the src="" below.
                     -->
-                    <img src="points_icon.png" alt="Points" class="currency-icon">
+                    <img src="https" alt="Points" class="currency-icon">
                     <span id="gameCurrency">1230</span>
                 </div>
                 <!-- Level Title -->
@@ -163,7 +171,12 @@
                 <!-- Footer with Hints -->
                 <div class="game-footer">
                     <button class="power-up-btn" id="powerHintBtn" onclick="usePowerHint()">
-                        <i data-feather="zap"></i> <!-- "Fire" icon -->
+                        <!-- 
+                          NOTE: Paste your direct .png link from:
+                          https://www.thiings.co/things/flame
+                          into the src="" below.
+                        -->
+                        <img src="https" alt="Flame Hint" class="power-up-icon">
                         <span>150</span>
                     </button>
                     <a href="#" class="report-link" data-lang="reportProblem">الإبلاغ عن مشكلة</a>
