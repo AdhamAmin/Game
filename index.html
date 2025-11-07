@@ -1,86 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- 
+  This HTML file is based *exactly* on the layout from the image you sent.
+  It's set to 'ar' (Arabic) by default but can be changed.
+-->
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Game Title -->
     <title data-lang="title">Dr.WEEE's World</title>
-    <!-- Updated Google Font import -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Import a modern icon library (Feather Icons) -->
-    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     
-    <!-- Main Game Container -->
-    <div class="game-wrapper" id="appContainer">
+    <!-- 
+      Main App Container
+      The background image is applied here by the script.
+    -->
+    <div id="appContainer">
 
-        <!-- AI Loading Spinner -->
-        <div class="ai-loader-overlay" id="aiLoader">
-            <div class="ai-loader-spinner"></div>
-            <p id="aiLoaderText" data-lang="aiLoading">Loading...</p>
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loadingScreen">
+            <h1 class="loading-title" data-lang="gameTitle">كلمات</h1>
+            <div class="loading-bar-container"><div class="loading-bar" id="loadingBar"></div></div>
+            <p class="loading-text" id="loadingText">Loading... 0%</p>
+        </div>
+        
+        <!-- AI Puzzle Loading Spinner (Hidden by default) -->
+        <div class="loading-screen" id="aiLoader" style="display: none;">
+            <div class="spinner"></div>
+            <p classs="loading-text" id="aiLoaderText" data-lang="aiLoading">Finding a new puzzle...</p>
         </div>
 
-        <!-- Main Menu Screen (Visible by default) -->
+        <!-- 
+          Main Menu Screen
+          This is the "Home" screen from your image.
+        -->
         <div class="game-screen" id="mainMenu">
             <div class="top-bar">
                 <div class="currency-display">
-                    <i data-feather="diamond"></i>
+                    <!-- 
+                      Updated to use your points icon.
+                      Please download the image from the link you sent,
+                      save it as "points_icon.png" in your project folder.
+                    -->
+                    <img src="points_icon.png" alt="Points" class="currency-icon">
                     <span id="mainCurrency">1230</span>
                 </div>
                 <!-- Icons exactly as requested -->
                 <div class="icon-buttons">
                     <button class="icon-btn" onclick="showLeaderboard()" aria-label="Leaderboard">
-                        <i data-feather="bar-chart-2"></i>
+                        <!-- 
+                          You will need to download the icon from the link you sent, 
+                          save it as "leaderboard_icon.png" in your project folder.
+                        -->
+                        <img src="leaderboard_icon.png" alt="Leaderboard" class="img-icon">
                     </button>
                     <button class="icon-btn" onclick="showFriends()" aria-label="Friends">
-                        <i data-feather="users"></i>
+                        <!-- 
+                          You will need to download the icon from the link you sent, 
+                          save it as "friends_icon.png" in your project folder.
+                        -->
+                        <img src="friends_icon.png" alt="Friends" class="img-icon">
                     </button>
                     <button class="icon-btn" onclick="toggleSettings()" aria-label="Settings">
-                        <i data-feather="settings"></i>
+                        <!-- 
+                          You will need to download the icon from the link you sent, 
+                          save it as "settings_icon.png" in your project folder.
+                        -->
+                        <img src="settings_icon.png" alt="Settings" class="img-icon">
                     </button>
                 </div>
             </div>
-            
-            <div class="menu-content">
-                <!-- Title "كلمات" -->
-                <h1 class="game-title-main" data-lang="gameTitle">Words</h1>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
                 
-                <!-- Progress Bar -->
-                <div class="progress-bar-container">
+                <!-- Progress Bar Area (with Glassmorphism) -->
+                <div class="progress-container">
+                    <!-- Title "WORDS" now inside the bar -->
+                    <h1 class="game-title" data-lang="gameTitle">كلمات</h1>
+                    
                     <div class="progress-labels">
-                        <span data-lang="beginner">Beginner</span>
-                        <span data-lang="expert">Expert</span>
+                        <span class="progress-rank" data-lang="beginner">مبتدئ</span>
+                        <span class="progress-rank" data-lang="expert">متعلم</span>
                     </div>
-                    <div class="progress-bar">
+                    <div class="progress-bar-outer">
                         <div class="progress-bar-inner" id="levelProgress" style="width: 18%;"></div>
                     </div>
                     <div class="progress-value" id="progressValue">18/100</div>
                 </div>
-
-                <!-- Main Menu Buttons -->
-                <button class="menu-btn primary" id="continueBtn" onclick="startGame()">
-                    <span data-lang="continueLevel">Level</span> 7
+                
+                <!-- Play Button (Level) -->
+                <button class="play-btn" id="continueBtn" onclick="startGame()">
+                    <span data-lang="continueLevel">المستوى</span> 7
                 </button>
-                <!-- This button has been removed -->
-                <!-- 
-                <button class="menu-btn secondary" onclick="toggleSettings(true)" data-lang="gameBackgrounds">
-                    Game Backgrounds
-                </button>
-                -->
+            </div>
+            
+            <!-- Language Selector (optional, could be in settings) -->
+            <div class="language-selector-container">
+                <select id="languageSelect" onchange="changeLanguage()">
+                    <option value="ar">🇸🇦 العربية</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="it">🇮🇹 Italiano</option>
+                    <option value="es">🇪🇸 Español</option>
+                </select>
             </div>
         </div>
-
-        <!-- Word Puzzle Screen (Hidden by default) -->
+        
+        <!-- 
+          Word Puzzle Screen (Hidden by default)
+          This is the "Game" screen from your image.
+        -->
         <div class="game-screen" id="gameContainer" style="display: none;">
             <div class="top-bar">
                 <div class="currency-display">
-                    <i data-feather="diamond"></i>
+                    <!-- 
+                      Updated to use your points icon.
+                      Please download the image from the link you sent,
+                      save it as "points_icon.png" in your project folder.
+                    -->
+                    <img src="points_icon.png" alt="Points" class="currency-icon">
                     <span id="gameCurrency">1230</span>
                 </div>
                 <!-- Level Title -->
                 <h2 class="game-level-title" id="gameLevelTitle">
-                    <span data-lang="level">Level</span> 7
+                    <span data-lang="level">المستوى</span> 7
                 </h2>
                 <!-- Home Button -->
                 <div class="icon-buttons">
@@ -93,17 +147,17 @@
             <div class="puzzle-content">
                 <!-- Hint Box -->
                 <div class="hint-box" id="gameHint">
-                    ...
+                    عاصمة المملكة المتحدة
                 </div>
                 
                 <!-- Answer Boxes (Will be empty) -->
                 <div class="answer-boxes" id="answerBoxes">
-                    <!-- Letter boxes for the answer will be generated here -->
+                    <!-- Letter boxes for the answer will be generated here by script.js -->
                 </div>
                 
                 <!-- Letter Grid (3 columns) -->
                 <div class="letter-grid" id="letterGrid">
-                    <!-- 12 letter tiles will be generated here -->
+                    <!-- 12 letter tiles will be generated here by script.js -->
                 </div>
 
                 <!-- Footer with Hints -->
@@ -112,7 +166,7 @@
                         <i data-feather="zap"></i> <!-- "Fire" icon -->
                         <span>150</span>
                     </button>
-                    <a href="#" class="report-link" data-lang="reportProblem">Report a problem</a>
+                    <a href="#" class="report-link" data-lang="reportProblem">الإبلاغ عن مشكلة</a>
                     <button class="power-up-btn" id="hintBtn" onclick="useHint()">
                         <i data-feather="help-circle"></i> <!-- "Wand" icon -->
                         <span>50</span>
@@ -121,91 +175,91 @@
             </div>
         </div>
 
-    </div> <!-- End .game-wrapper -->
 
-    <!-- Pop-up Panels (Same as before, but will match style) -->
+        <!-- 
+          PANELS (Overlays)
+        -->
 
-    <!-- Settings Panel -->
-    <div class="panel-overlay" id="settingsPanel" style="display: none;">
-        <div class="panel-content">
-            <h2 data-lang="settings">Settings</h2>
-            
-            <div class="setting-item">
-                <label class="setting-label" data-lang="musicVolume">Music Volume</label>
-                <input type="range" class="volume-slider" id="musicVolume" min="0" max="100" value="50">
+        <!-- Settings Panel -->
+        <div class="panel" id="settingsPanel" style="display: none;">
+            <h2 data-lang="settings">الإعدادات</h2>
+            <button class="close-btn" onclick="toggleSettings()"><i data-feather="x"></i></button>
+            <div class="panel-content">
+                <div class="setting-item">
+                    <label class="setting-label" data-lang="playerName">Player Name</label>
+                    <input type="text" class="name-input" id="playerNameInput" placeholder="Enter your name" maxlength="20">
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label" data-lang="musicVolume">Music Volume</label>
+                    <input type="range" class="volume-slider" id="musicVolume" min="0" max="100" value="50">
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label" data-lang="sfxVolume">SFX Volume</label>
+                    <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="70">
+                </div>
+                
+                <!-- Backgrounds -->
+                <div class="setting-item" id="backgroundSettings">
+                    <label class="setting-label" data-lang="chooseBackground">Choose Background</label>
+                    <div class="background-options" id="backgroundOptions">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
             </div>
-            <div class="setting-item">
-                <label class="setting-label" data-lang="sfxVolume">SFX Volume</label>
-                <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="70">
-            </div>
-            
-            <div class="setting-item">
-                <label class="setting-label" data-lang="playerName">Player Name</label>
-                <input type="text" class="name-input" id="playerNameInput" placeholder="Enter your name" maxlength="20">
-            </div>
+        </div>
 
-            <div class="setting-item" id="backgroundSettings">
-                <label class="setting-label" data-lang="chooseBackground">Choose Background</label>
-                <div class="background-options" id="backgroundOptions">
+        <!-- Friends Panel -->
+        <div class="panel" id="friendsPanel" style="display: none;">
+            <h2 data-lang="friends">الأصدقاء</h2>
+            <button class="close-btn" onclick="closeFriends()"><i data-feather="x"></i></button>
+            <div class="panel-content">
+                <div class="setting-item">
+                    <label class="setting-label" data-lang="yourCode">Your Player Code</label>
+                    <div class="player-code" id="playerCode">LOADING...</div>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label" data-lang="addFriend">Add Friend by Code</label>
+                    <input type="text" class="code-input" id="friendCodeInput" placeholder="Enter friend code" maxlength="8">
+                    <button class="panel-btn" onclick="addFriend()" data-lang="add">Add Friend</button>
+                </div>
+                <div class="friends-list" id="friendsList"></div>
+            </div>
+        </div>
+        
+        <!-- Leaderboard Panel -->
+        <div class="panel" id="leaderboardPanel" style="display: none;">
+            <h2 data-lang="leaderboard">المتصدرين</h2>
+            <button class="close-btn" onclick="closeLeaderboard()"><i data-feather="x"></i></button>
+            <div class="panel-content">
+                <div class="friends-list" id="leaderboardEntries">
                     <!-- Populated by JS -->
                 </div>
             </div>
-
-            <button class="panel-btn" onclick="toggleSettings()" data-lang="close">Close</button>
         </div>
-    </div>
-
-    <!-- Friends Panel -->
-    <div class="panel-overlay" id="friendsPanel" style="display: none;">
-        <div class="panel-content">
-            <h2 data-lang="friends">Friends</h2>
-            <div class="setting-item">
-                <label class="setting-label" data-lang="yourCode">Your Player Code</label>
-                <div class="player-code" id="playerCode">LOADING...</div>
+        
+        <!-- Level Complete Panel -->
+        <div class="panel" id="levelCompletePanel" style="display: none;">
+            <div class="panel-content" style="text-align: center;">
+                <h2>🎉</h2>
+                <h2 data-lang="levelComplete">Level Complete!</h2>
+                <p data-lang="greatJob">Great job!</p>
+                <button class="panel-btn" onclick="nextLevel()" data-lang="continueNext">Continue</button>
             </div>
-            <div class="setting-item">
-                <label class="setting-label" data-lang="addFriend">Add Friend by Code</label>
-                <input type="text" class="name-input" id="friendCodeInput" placeholder="Enter friend code" maxlength="8">
-                <button class="panel-btn primary" onclick="addFriend()" data-lang="add">Add Friend</button>
+        </div>
+        
+        <!-- Game Over / Error Panel -->
+        <div class="panel" id="gameOverPanel" style="display: none;">
+             <div class="panel-content" style="text-align: center;">
+                <h2 data-lang="aiErrorTitle">Error</h2>
+                <p id="gameOverTip" data-lang="aiError">Could not load puzzle.</p>
+                <button class="panel-btn" onclick="retryGame()" data-lang="tryAgain">Try Again</button>
+                <button class="panel-btn-secondary" onclick="backToMenu()" data-lang="mainMenu">Main Menu</button>
             </div>
-            <div class="friends-list" id="friendsList"></div>
-            <button class="panel-btn" onclick="closeFriends()" data-lang="close">Close</button>
         </div>
-    </div>
+        
+    </div> <!-- /#appContainer -->
 
-    <!-- Leaderboard Panel -->
-    <div class="panel-overlay" id="leaderboardPanel" style="display: none;">
-        <div class="panel-content">
-            <h2 data-lang="leaderboard">Leaderboard</h2>
-            <div class="friends-list" id="leaderboardEntries">
-                <!-- Leaderboard entries will be populated here -->
-            </div>
-            <button class="panel-btn" onclick="closeLeaderboard()" data-lang="close">Close</button>
-        </div>
-    </div>
-
-    <!-- Level Complete Panel -->
-    <div class="panel-overlay" id="levelCompletePanel" style="display: none;">
-        <div class="panel-content">
-            <h2>🎉</h2>
-            <h2 data-lang="levelComplete">Level Complete!</h2>
-            <p data-lang="greatJob">Great job!</p>
-            <button class="panel-btn primary" onclick="nextLevel()" data-lang="continueNext">Continue</button>
-        </div>
-    </div>
-
-    <!-- Game Over/Error Panel -->
-    <div class="panel-overlay" id="gameOverPanel" style="display: none;">
-        <div class="panel-content">
-            <h2>😢</h2>
-            <h2 data-lang="aiErrorTitle">Error</h2>
-            <p id="gameOverTip" data-lang="aiError">Could not load puzzle. Please try again.</p>
-            <button class="panel-btn danger" onclick="retryGame()" data-lang="tryAgain">Try Again</button>
-            <button class="panel-btn" onclick="backToMenu()" data-lang="mainMenu">Main Menu</button>
-        </div>
-    </div>
-
-    <!-- This script tag must be at the end of <body> -->
+    <!-- Main Game Script -->
     <script src="script.js"></script>
 </body>
 </html>
