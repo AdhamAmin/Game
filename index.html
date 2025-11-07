@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <!-- Viewport tag is crucial for responsiveness -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DRWEEE WORLD</title>
+    <title>Dr.WEEE's World</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -42,21 +42,24 @@
         <h1 class="game-title" data-lang="title">Dr.WEEE's World</h1>
         
         <div class="main-layout">
-            <div class="character-display left">
-                <img src="https://placehold.co/150x200/7cb342/ecf0f1?text=Dr.WEEE&font=fredoka+one" alt="Dr. WEEE" class="character-img" id="boyImg" onerror="this.src='https://placehold.co/150x200/7cb342/ecf0f1?text=Dr.WEEE&font=fredoka+one'">
+            <!-- Updated: Added onclick and cursor style -->
+            <div class="character-display left" onclick="selectCharacterAndStart('boy')" style="cursor: pointer;">
+                <!-- Updated: New image src and onerror -->
+                <img src="https://raw.githubusercontent.com/AdhamAmin/Game/main/image-removebg-preview.png" alt="Dr. WEEE" class="character-img" id="boyImg" onerror="this.src='https://placehold.co/150x200/7cb342/ecf0f1?text=Dr.WEEE&font=fredoka+one'">
                 <div class="character-name" data-lang="drweee">Dr. WEEE</div>
             </div>
             
             <div class="menu">
-                <button class="menu-btn" onclick="selectCharacterAndStart('boy')" data-lang="playAsBoy">🎮 Play as Dr. WEEE</button>
-                <button class="menu-btn" onclick="selectCharacterAndStart('girl')" data-lang="playAsGirl">🎀 Play as Dr. WEEENA</button>
+                <!-- Removed "Play As" buttons -->
                 <button class="menu-btn" onclick="startRace()" data-lang="raceChallenge">🏎️ Race Challenge</button>
                 <button class="menu-btn" onclick="showLeaderboard()" data-lang="leaderboard">🏆 Leaderboard</button>
                 <button class="menu-btn" onclick="showFriends()" data-lang="friends">👥 Friends</button>
             </div>
             
-            <div class="character-display right">
-                <img src="https://placehold.co/150x200/e74c3c/ecf0f1?text=Dr.WEEENA&font=fredoka+one" alt="Dr. WEEENA" class="character-img" id="girlImg" onerror="this.src='https://placehold.co/150x200/e74c3c/ecf0f1?text=Dr.WEEENA&font=fredoka+one'">
+            <!-- Updated: Added onclick and cursor style -->
+            <div class="character-display right" onclick="selectCharacterAndStart('girl')" style="cursor: pointer;">
+                <!-- Updated: New image src and onerror -->
+                <img src="https://raw.githubusercontent.com/AdhamAmin/Game/main/image-removebg-preview.png" alt="Dr. WEEENA" class="character-img" id="girlImg" onerror="this.src='https://placehold.co/150x200/e74c3c/ecf0f1?text=Dr.WEEENA&font=fredoka+one'">
                 <div class="character-name" data-lang="drweeena">Dr. WEEENA</div>
             </div>
         </div>
@@ -180,7 +183,7 @@
 
     <!-- Level Complete Panel -->
     <div class="level-complete" id="levelComplete">
-        <h2 data-lang="levelComplete">🎉 Level Complete!! 🎉</h2>
+        <h2 data-lang="levelComplete">🎉 Level Complete! 🎉</h2>
         <p data-lang="greatJob">Great job!</p>
         <button class="continue-btn" onclick="nextLevel()" data-lang="continueNext">Continue</button>
     </div>
